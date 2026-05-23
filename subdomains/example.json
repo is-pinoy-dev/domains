@@ -9,5 +9,6 @@
     "CNAME": {
       "value": "f2db5e3be88b5a03.vercel-dns-017.com."
     }
-  }
+  },
+  "destroy": true
 }
