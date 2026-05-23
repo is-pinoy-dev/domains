@@ -15,47 +15,20 @@ jobs:
       - name: Checkout domains
         uses: actions/checkout@v4
 
-      - name: Checkout ecosystem
-        uses: actions/checkout@v4
-        with:
-          repository: is-pinoy-dev/ecosystem
-          path: ecosystem
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.33.4
-          run_install: false
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
-          cache-dependency-path: ecosystem/pnpm-lock.yaml
+          registry-url: https://npm.pkg.github.com
+          scope: "@is-pinoy-dev"
 
-      - name: Cache CLI build
-        id: cache-cli
-        uses: actions/cache@v4
-        with:
-          path: ecosystem/packages/cli/dist
-          key: cli-${{ hashFiles('ecosystem/packages/cli/src/**', 'ecosystem/pnpm-lock.yaml') }}
-
-      - name: Install dependencies
-        working-directory: ecosystem
-        run: pnpm install --frozen-lockfile
-
-      - name: Build schemas and registry
-        working-directory: ecosystem
-        run: pnpm --filter @is-pinoy-dev/schemas build && pnpm --filter @is-pinoy-dev/registry build
-
-      - name: Build CLI
-        if: steps.cache-cli.outputs.cache-hit != 'true'
-        working-directory: ecosystem
-        run: pnpm --filter @is-pinoy-dev/cli build
+      - name: Install CLI
+        run: npm install -g @is-pinoy-dev/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sync subdomains
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-        run: node ecosystem/packages/cli/dist/index.js registry sync --dir ./subdomains --yes
+        run: is-pinoy registry sync --dir ./subdomains --yes

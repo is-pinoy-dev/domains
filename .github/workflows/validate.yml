@@ -13,44 +13,17 @@ jobs:
       - name: Checkout domains
         uses: actions/checkout@v4
 
-      - name: Checkout ecosystem
-        uses: actions/checkout@v4
-        with:
-          repository: is-pinoy-dev/ecosystem
-          path: ecosystem
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.33.4
-          run_install: false
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
-          cache-dependency-path: ecosystem/pnpm-lock.yaml
+          registry-url: https://npm.pkg.github.com
+          scope: "@is-pinoy-dev"
 
-      - name: Cache CLI build
-        id: cache-cli
-        uses: actions/cache@v4
-        with:
-          path: ecosystem/packages/cli/dist
-          key: cli-${{ hashFiles('ecosystem/packages/cli/src/**', 'ecosystem/pnpm-lock.yaml') }}
-
-      - name: Install dependencies
-        working-directory: ecosystem
-        run: pnpm install --frozen-lockfile
-
-      - name: Build schemas and registry
-        working-directory: ecosystem
-        run: pnpm --filter @is-pinoy-dev/schemas build && pnpm --filter @is-pinoy-dev/registry build
-
-      - name: Build CLI
-        if: steps.cache-cli.outputs.cache-hit != 'true'
-        working-directory: ecosystem
-        run: pnpm --filter @is-pinoy-dev/cli build
+      - name: Install CLI
+        run: npm install -g @is-pinoy-dev/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Validate subdomain ownership
         env:
@@ -70,4 +43,4 @@ jobs:
           [ "$failed" = "true" ] && exit 1 || exit 0
 
       - name: Validate subdomains
-        run: node ecosystem/packages/cli/dist/index.js registry validate --dir ./subdomains
+        run: is-pinoy registry validate --dir ./subdomains
