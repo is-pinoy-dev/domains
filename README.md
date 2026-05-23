@@ -8,7 +8,11 @@ Point your portfolio, side project, or open source work at a subdomain that repr
 
 1. **Fork** this repository
 2. **Create** a file at `subdomains/<your-subdomain>.json`
-3. **Open a pull request** — your subdomain is live once it's merged and synced
+3. **Validate** your file before opening a PR:
+   ```bash
+   npx @is-pinoy-dev/validate ./subdomains/<your-subdomain>.json
+   ```
+4. **Open a pull request** — your subdomain is live once it's merged and synced
 
 > **Want a faster review?** Post your PR link in our [Discord](https://discord.com/channels/1507758007218471062/1507758194624299039) and a maintainer will pick it up sooner.
 
