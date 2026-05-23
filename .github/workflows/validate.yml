@@ -46,7 +46,7 @@ jobs:
       - name: Build CLI
         if: steps.cache-cli.outputs.cache-hit != 'true' # skip if cache hit
         working-directory: ecosystem
-        run: pnpm --filter @is-pinoy/registry build && pnpm --filter @is-pinoy/cli build
+        run: pnpm --filter @is-pinoy/schemas build && pnpm --filter @is-pinoy/registry build && pnpm --filter @is-pinoy/cli build
 
       - name: Validate subdomains
         run: node ecosystem/packages/cli/dist/index.js registry validate --dir ./subdomains
