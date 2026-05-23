@@ -48,5 +48,22 @@ jobs:
         working-directory: ecosystem
         run: pnpm --filter @is-pinoy/schemas build && pnpm --filter @is-pinoy/registry build && pnpm --filter @is-pinoy/cli build
 
+      - name: Validate subdomain ownership
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          files=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
+            --jq '.[].filename | select(startswith("subdomains/") and endswith(".json"))')
+          failed=false
+          for file in $files; do
+            owner=$(jq -r '.owner.github' "$file")
+            if [ "$owner" != "$PR_AUTHOR" ]; then
+              echo "Error: $file — owner.github \"$owner\" does not match PR author \"$PR_AUTHOR\""
+              failed=true
+            fi
+          done
+          [ "$failed" = "true" ] && exit 1 || exit 0
+
       - name: Validate subdomains
         run: node ecosystem/packages/cli/dist/index.js registry validate --dir ./subdomains
