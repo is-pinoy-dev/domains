@@ -1,6 +1,6 @@
-# ispinoy.dev
+# is-pinoy.dev
 
-Free `*.ispinoy.dev` subdomains for Filipino developers.
+Free `*.is-pinoy.dev` subdomains for Filipino developers.
 
 Point your portfolio, side project, or open source work at a subdomain that represents where you're from.
 

@@ -1,6 +1,6 @@
 ## Subdomain Registration
 
-**Subdomain:** `<your-subdomain>.ispinoy.dev`
+**Subdomain:** `<your-subdomain>.is-pinoy.dev`
 
 ### Checklist
 
