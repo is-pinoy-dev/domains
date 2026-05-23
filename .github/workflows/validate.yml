@@ -7,6 +7,7 @@ on:
 
 jobs:
   validate:
+    name: Validate Subdomains
     runs-on: ubuntu-latest
     steps:
       - name: Checkout domains
@@ -31,13 +32,21 @@ jobs:
           cache: pnpm
           cache-dependency-path: ecosystem/pnpm-lock.yaml
 
+      - name: Cache CLI build
+        id: cache-cli
+        uses: actions/cache@v4
+        with:
+          path: ecosystem/packages/cli/dist
+          key: cli-${{ hashFiles('ecosystem/packages/cli/src/**', 'ecosystem/pnpm-lock.yaml') }}
+
       - name: Install dependencies
         working-directory: ecosystem
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI
+        if: steps.cache-cli.outputs.cache-hit != 'true' # skip if cache hit
         working-directory: ecosystem
         run: pnpm --filter @is-pinoy/registry build && pnpm --filter @is-pinoy/cli build
 
-      - name: Validate domains
+      - name: Validate subdomains
         run: node ecosystem/packages/cli/dist/index.js registry validate --dir ./subdomains
