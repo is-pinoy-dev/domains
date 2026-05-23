@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "subdomain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 63,
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "owner": {
+      "type": "object",
+      "properties": {
+        "github": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+        }
+      },
+      "required": [
+        "github"
+      ],
+      "additionalProperties": false
+    },
+    "records": {
+      "type": "object",
+      "properties": {
+        "A": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "ttl": {
+                  "type": "number"
+                },
+                "value": {
+                  "type": "string",
+                  "format": "ipv4",
+                  "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ttl": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string",
+                    "format": "ipv4",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ]
+        },
+        "CNAME": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "ttl": {
+                  "type": "number"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "proxied": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ttl": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "proxied": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ]
+        },
+        "TXT": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "ttl": {
+                  "type": "number"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "provider": {
+                  "type": "string",
+                  "enum": [
+                    "vercel"
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "provider"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ttl": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "vercel"
+                    ]
+                  }
+                },
+                "required": [
+                  "value",
+                  "provider"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "destroy": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "subdomain",
+    "owner",
+    "records"
+  ],
+  "additionalProperties": false
+}

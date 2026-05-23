@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
   "subdomain": "example",
   "owner": {
     "github": "bosquejun",
@@ -8,6 +9,5 @@
     "CNAME": {
       "value": "f2db5e3be88b5a03.vercel-dns-017.com."
     }
-  },
-  "destroy": true
+  }
 }
