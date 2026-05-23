@@ -1,0 +1,12 @@
+{
+  "subdomain": "example",
+  "owner": {
+    "github": "bosquejun",
+    "email": "bosque.junpaul@gmail.com"
+  },
+  "records": {
+    "CNAME": {
+      "value": "f2db5e3be88b5a03.vercel-dns-017.com."
+    }
+  }
+}
