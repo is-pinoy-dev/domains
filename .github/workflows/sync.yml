@@ -47,12 +47,12 @@ jobs:
 
       - name: Build schemas and registry
         working-directory: ecosystem
-        run: pnpm --filter @is-pinoy/schemas build && pnpm --filter @is-pinoy/registry build
+        run: pnpm --filter @is-pinoy-dev/schemas build && pnpm --filter @is-pinoy-dev/registry build
 
       - name: Build CLI
         if: steps.cache-cli.outputs.cache-hit != 'true'
         working-directory: ecosystem
-        run: pnpm --filter @is-pinoy/cli build
+        run: pnpm --filter @is-pinoy-dev/cli build
 
       - name: Sync subdomains
         env:
