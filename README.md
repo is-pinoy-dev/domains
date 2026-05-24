@@ -2,7 +2,9 @@
 
 Free `*.is-pinoy.dev` subdomains for Filipino developers.
 
-Point your portfolio, side project, or open source work at a subdomain that represents where you're from.
+> **Note:** We are currently only accepting **portfolio websites** for the meantime. Side projects and other use cases will be open in the future.
+
+Point your portfolio at a subdomain that represents where you're from.
 
 ## Register a Subdomain
 
@@ -87,6 +89,7 @@ You can combine record types. For example, use `CNAME` for your site and `TXT` f
 - Subdomain must be lowercase alphanumeric and hyphens only (`a-z`, `0-9`, `-`)
 - Length: 1–63 characters
 - One subdomain per person
+- Must be a **portfolio website** (side projects and other use cases are not accepted for now)
 - Must point to something real — no squatting
 - `owner.github` must match your GitHub username
 
