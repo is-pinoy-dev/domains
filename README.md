@@ -16,6 +16,8 @@ Point your portfolio at a subdomain that represents where you're from.
    ```
 4. **Open a pull request** — your subdomain is live once it's merged and synced
 
+> **Not sure where to find your CNAME or TXT values?** See the [provider guides](#provider-guides) below.
+
 > **Want a faster review?** Post your PR link in our [Discord](https://discord.com/channels/1507758007218471062/1507758194624299039) and a maintainer will pick it up sooner.
 
 ## JSON Format
@@ -92,6 +94,12 @@ You can combine record types. For example, use `CNAME` for your site and `TXT` f
 - Must be a **portfolio website** (side projects and other use cases are not accepted for now)
 - Must point to something real — no squatting
 - `owner.github` must match your GitHub username
+
+## Provider Guides
+
+Step-by-step instructions for finding your DNS values on popular hosting platforms:
+
+- [Vercel](docs/providers/vercel.md)
 
 ## Contributing
 
