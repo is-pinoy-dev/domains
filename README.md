@@ -1,5 +1,7 @@
 # is-pinoy.dev
 
+[![Registered Subdomains](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fis-pinoy-dev%2Fdomains%2Fmain%2Fstats.json)](https://github.com/is-pinoy-dev/domains/tree/main/subdomains)
+
 Free `*.is-pinoy.dev` subdomains for Filipino developers.
 
 > **Note:** We are currently only accepting **portfolio websites** for the meantime. Side projects and other use cases will be open in the future.

@@ -1,0 +1,43 @@
+name: Stats
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "subdomains/**"
+
+jobs:
+  stats:
+    name: Update Subdomain Stats
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Count subdomains
+        id: count
+        run: |
+          COUNT=$(find subdomains -name "*.json" | wc -l | tr -d ' ')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Write stats.json
+        run: |
+          cat > stats.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "registered subdomains",
+            "message": "${{ steps.count.outputs.count }}",
+            "color": "blue"
+          }
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add stats.json
+          git diff --staged --quiet || git commit -m "chore: update subdomain stats"
+          git push
