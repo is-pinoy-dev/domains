@@ -2,6 +2,12 @@
 
 **Subdomain:** `<your-subdomain>.is-pinoy.dev`
 
+### Website Screenshot
+
+<!-- Please attach a screenshot of your portfolio website below. Drag and drop an image here or paste it directly. -->
+
+
+
 ### Technical Checklist
 
 - [ ] Filename and `subdomain` field in JSON both match your subdomain (e.g. `yourname.json` with `"subdomain": "yourname"`)
@@ -12,7 +18,7 @@
 
 ### Terms
 
-- [ ] My subdomain is for a non-commercial developer project (portfolio, app, API, open source tool, or similar)
+- [ ] My subdomain points to a **portfolio website**
 - [ ] I agree to the [Terms of Service](https://is-pinoy.dev/tos)
 - [ ] I have read and understood the [Privacy Policy](https://is-pinoy.dev/privacy) — I acknowledge my GitHub username and subdomain will be publicly visible in this repository, and that my email address (if provided) will be used solely to contact me about my subdomain
 - [ ] I have read the [contributing guidelines](../CONTRIBUTING.md)
