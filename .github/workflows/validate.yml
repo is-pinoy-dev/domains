@@ -2,33 +2,34 @@ name: Validate
 
 on:
   pull_request:
-    paths:
-      - "subdomains/**"
 
 jobs:
   validate:
     name: Validate Subdomains
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout domains
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: "@is-pinoy-dev"
-
-      - name: Install CLI
-        run: npm install -g @is-pinoy-dev/cli
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Detect subdomain file changes
+        id: detect
+        run: |
+          files=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
+            --jq '[.[].filename | select(startswith("subdomains/") and endswith(".json"))] | length')
+          if [ "$files" -gt 0 ]; then
+            echo "has_subdomain_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_subdomain_changes=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Validate subdomain ownership
+        if: steps.detect.outputs.has_subdomain_changes == 'true'
         env:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-          GH_TOKEN: ${{ github.token }}
         run: |
           files=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
             --jq '.[].filename | select(startswith("subdomains/") and endswith(".json"))')
@@ -43,4 +44,8 @@ jobs:
           [ "$failed" = "true" ] && exit 1 || exit 0
 
       - name: Validate subdomains
-        run: is-pinoy registry validate --dir ./subdomains
+        if: steps.detect.outputs.has_subdomain_changes == 'true'
+        uses: is-pinoy-dev/ecosystem/.github/actions/registry-validate@main
+        with:
+          dir: ./subdomains
+          github-token: ${{ secrets.GITHUB_TOKEN }}
