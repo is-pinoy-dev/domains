@@ -11,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Count subdomains
         id: count
@@ -33,15 +34,13 @@ jobs:
           }
           EOF
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.PAT_TOKEN }}
-          commit-message: "chore: update subdomain stats"
-          author: "Dyep <dyep@is-pinoy.dev>"
-          committer: "Dyep <dyep@is-pinoy.dev>"
-          title: "chore: update subdomain stats"
-          branch: "update-stats"
-          base: "main"
-          delete-branch: true
-          labels: "automated"
+      - name: Commit and push
+        run: |
+          git config user.name "Dyep"
+          git config user.email "dyep@is-pinoy.dev"
+          git add stats.json
+          git diff --staged --quiet || {
+            git commit -m "chore: update subdomain stats"
+            git pull --rebase origin main
+            git push https://x:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+          }
