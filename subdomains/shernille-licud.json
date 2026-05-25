@@ -1,0 +1,11 @@
+{
+  "subdomain": "shernille-licud",
+  "owner": {
+    "github": "shernille37"
+  },
+  "records": {
+    "CNAME": {
+      "value": "318958cb4ecad862.vercel-dns-017.com."
+    }
+  }
+}
