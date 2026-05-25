@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "flaminghotsisig",
+  "owner": {
+    "github": "loydskie11"
+  },
+  "records": {
+    "CNAME": {
+      "value": "7b5c84b52a431896.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=flaminghotsisig.is-pinoy.dev,364e7e1791d439564251",
+      "provider": "vercel"
+    }
+  }
+}
