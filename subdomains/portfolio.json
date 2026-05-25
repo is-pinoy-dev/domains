@@ -1,10 +1,13 @@
-
 {
-    "owner": {
-        "username": "Geyoh",
-        "email": "geofreysarabia620@gmail.com"
-    },
-    "record": {
-        "CNAME": "cname.vercel-dns.com"
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "portfolio",
+  "owner": {
+    "github": "Geyoh",
+    "email": "geofreysarabia620@gmail.com"
+  },
+  "records": {
+    "CNAME": {
+      "value": "cname.vercel-dns.com."
     }
+  }
 }
