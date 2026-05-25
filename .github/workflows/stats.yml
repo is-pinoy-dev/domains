@@ -1,11 +1,9 @@
 name: Stats
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "subdomains/**"
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   stats:
@@ -36,8 +34,8 @@ jobs:
 
       - name: Commit and push
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "Dyep"
+          git config user.email "dyep@is-pinoy.dev"
           git add stats.json
           git diff --staged --quiet || git commit -m "chore: update subdomain stats"
-          git push
+          git push https://x:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
