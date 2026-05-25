@@ -1,1 +1,10 @@
 
+{
+    "owner": {
+        "username": "Geyoh",
+        "email": "geofreysarabia620@gmail.com"
+    },
+    "record": {
+        "CNAME": "cname.vercel-dns.com"
+    }
+}
