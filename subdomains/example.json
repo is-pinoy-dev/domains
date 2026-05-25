@@ -2,8 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
   "subdomain": "example",
   "owner": {
-    "github": "bosquejun",
-    "email": "bosque.junpaul@gmail.com"
+    "github": "bosquejun"
   },
   "records": {
     "CNAME": {
