@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+      packages: read
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
