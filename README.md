@@ -9,6 +9,7 @@
 Point your portfolio at a subdomain that represents where you're from.
 
 [![Registered Subdomains](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fis-pinoy-dev%2Fdomains%2Fmain%2Fstats.json&style=for-the-badge&color=FFD700&labelColor=1a1a2e&logoColor=FFD700)](https://github.com/is-pinoy-dev/domains/tree/main/subdomains)
+
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](https://github.com/is-pinoy-dev/domains/pulls)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Community](https://img.shields.io/badge/community-discord-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/channels/1507758007218471062/1507758194624299039)
