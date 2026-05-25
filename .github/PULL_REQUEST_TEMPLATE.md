@@ -1,3 +1,5 @@
+> **⚠️ IMPORTANT:** Do not remove any sections from this template. Pull Requests that do not follow this template will **not be reviewed or processed**.
+
 ## Subdomain Registration
 
 **Subdomain:** `<your-subdomain>.is-pinoy.dev`
