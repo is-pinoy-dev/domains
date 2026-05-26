@@ -1,8 +1,6 @@
 name: Stats
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -25,14 +23,12 @@ jobs:
 
       - name: Write stats.json
         run: |
-          cat > stats.json <<EOF
-          {
-            "schemaVersion": 1,
-            "label": "registered subdomains",
-            "message": "${{ steps.count.outputs.count }}",
-            "color": "blue"
-          }
-          EOF
+          echo '{' > stats.json
+          echo '  "schemaVersion": 1,' >> stats.json
+          echo '  "label": "registered subdomains",' >> stats.json
+          echo "  \"message\": \"${{ steps.count.outputs.count }}\"," >> stats.json
+          echo '  "color": "blue"' >> stats.json
+          echo '}' >> stats.json
 
       - name: Commit and push
         run: |
