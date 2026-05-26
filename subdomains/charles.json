@@ -1,0 +1,12 @@
+{
+  "subdomain": "charlesangelo",
+  "owner": {
+    "github": "CharlesCuizon19",
+    "email": "charlescuizon2003@gmail.com"
+  },
+  "records": {
+    "CNAME": {
+      "value": "cabc.vercel.app."
+    }
+  }
+}
