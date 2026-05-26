@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "aldrsze",
+  "owner": {
+    "github": "aldrsze"
+  },
+  "records": {
+    "CNAME": {
+      "value": "2c7825caebad93ea.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=aldrsze.is-pinoy.dev,319fa6832abf97c3e198",
+      "provider": "vercel"
+    }
+  }
+}
