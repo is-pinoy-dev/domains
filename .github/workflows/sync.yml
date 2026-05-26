@@ -19,13 +19,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: "@is-pinoy-dev"
 
       - name: Install CLI
         run: npm install -g @is-pinoy-dev/cli@latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sync subdomains
         env:
