@@ -8,6 +8,10 @@
   "records": {
     "CNAME": {
       "value": "398b3d337a8f2990.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=charlesangelo.is-pinoy.dev,a8e8bcf984e213b828bb",
+      "provider": "vercel"
     }
   }
 }
