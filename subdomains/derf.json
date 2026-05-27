@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "derf",
+  "owner": {
+    "github": "derf567"
+  },
+  "records": {
+    "CNAME": {
+      "value": "efbd3185e629f9c3.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=derf.is-pinoy.dev,f76f531e0a09fc1fa68b",
+      "provider": "vercel"
+    }
+  }
+}
