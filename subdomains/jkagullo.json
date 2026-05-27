@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "jkagullo",
+  "owner": {
+    "github": "jkagullo"
+  },
+  "records": {
+    "CNAME": {
+      "value": "13efead200c18c3f.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=jkagullo.is-pinoy.dev,ef0e3074fb27389304c4",
+      "provider": "vercel"
+    }
+  }
+}
