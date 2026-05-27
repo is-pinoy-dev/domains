@@ -8,7 +8,7 @@
       "value": "075802c2c62f4e9a.vercel-dns-017.com."
     },
     "TXT": {
-      "name": "_vercel",
+      "provider": "vercel",
       "value": "vc-domain-verify=michael.is-pinoy.dev,dd26334023e92e095a0b"
     }
   }
