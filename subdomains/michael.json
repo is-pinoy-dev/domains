@@ -1,0 +1,11 @@
+{
+  "subdomain": "michael",
+  "owner": {
+    "github": "mikegitael"
+  },
+  "records": {
+    "CNAME": {
+      "value": "my-portfolio-woad-kappa-58.vercel.app."
+    }
+  }
+}
