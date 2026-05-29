@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "nicootchengco",
+  "owner": {
+    "github": "nico-otchengco"
+  },
+  "records": {
+    "CNAME": {
+      "value": "e7505a6e6b9e0e52.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=nicootchengco.is-pinoy.dev,427870e54c308773bd09",
+      "provider": "vercel"
+    }
+  }
+}
