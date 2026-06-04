@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "jersoncaguiat",
+  "owner": {
+    "github": "Owlpierre-glitch"
+  },
+  "records": {
+    "CNAME": {
+      "value": "fc8d61629c17e34c.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=jersoncaguiat.is-pinoy.dev,e4da9e8e2e501eac0967",
+      "provider": "vercel"
+    }
+  }
+}
