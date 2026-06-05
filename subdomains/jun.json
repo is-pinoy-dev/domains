@@ -7,11 +7,11 @@
   },
   "records": {
     "CNAME": {
-      "value": "f2db5e3be88b5a03.vercel-dns-017.com.",
+      "value": "9d4debd2682df60d.vercel-dns-017.com.",
       "proxied": true
     },
     "TXT": {
-      "value": "vc-domain-verify=jun.is-pinoy.dev,bd59a4b098046701076c",
+      "value": "\"vc-domain-verify=jun.is-pinoy.dev,924ab466b2edf143cd12,dc\"",
       "provider": "vercel"
     }
   },
