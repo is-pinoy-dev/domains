@@ -54,7 +54,7 @@ jobs:
 
       - name: Validate subdomains
         if: steps.detect.outputs.has_subdomain_changes == 'true'
-        uses: is-pinoy-dev/ecosystem/.github/actions/registry-validate@9ca47d9ab6c483894344a75d3cd32555477a9d6a
+        uses: is-pinoy-dev/ecosystem/.github/actions/registry-validate@366190ec4f32b37312d465f1e044ca998fb898a5
         with:
           dir: ./subdomains
           github-token: ${{ secrets.GITHUB_TOKEN }}
