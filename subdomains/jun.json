@@ -2,17 +2,12 @@
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
   "subdomain": "jun",
   "owner": {
-    "github": "bosquejun",
-    "email": "bosque.junpaul@gmail.com"
+    "github": "bosquejun"
   },
   "records": {
     "CNAME": {
       "value": "9d4debd2682df60d.vercel-dns-017.com.",
-      "proxied": false
-    },
-    "TXT": {
-      "value": "vc-domain-verify=jun.is-pinoy.dev,637b0a63f5fdbfe63197",
-      "provider": "vercel"
+      "proxied": true
     }
   },
   "features": {
