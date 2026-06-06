@@ -53,3 +53,5 @@ jobs:
         with:
           dir: ./subdomains
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}

@@ -8,9 +8,40 @@ on:
       - "subdomains/**"
 
 jobs:
+  validate:
+    name: Validate Subdomains
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout domains
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect subdomain file changes
+        id: detect
+        run: |
+          files=$(git diff --name-only HEAD~1 HEAD -- 'subdomains/*.json' | wc -l)
+          if [ "$files" -gt 0 ]; then
+            echo "has_subdomain_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_subdomain_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate subdomains
+        if: steps.detect.outputs.has_subdomain_changes == 'true'
+        uses: is-pinoy-dev/ecosystem/.github/actions/registry-validate@main
+        with:
+          dir: ./subdomains
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+
   sync:
     name: Sync Subdomains to Cloudflare
     runs-on: ubuntu-latest
+    needs: validate
     steps:
       - name: Checkout domains
         uses: actions/checkout@v4
