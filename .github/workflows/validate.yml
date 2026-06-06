@@ -14,9 +14,17 @@ jobs:
     permissions:
       pull-requests: write
       contents: read
+      id-token: write
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
+      - name: Generate Pareng Gar token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Checkout domains
         uses: actions/checkout@v4
         with:
@@ -57,6 +65,6 @@ jobs:
         uses: is-pinoy-dev/ecosystem/.github/actions/registry-validate@366190ec4f32b37312d465f1e044ca998fb898a5
         with:
           dir: ./subdomains
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
