@@ -61,7 +61,7 @@ Create a file at `subdomains/yourname.json` in your fork of the repository.
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
   "subdomain": "yourname",
   "owner": {
     "github": "your-github-username"
@@ -78,7 +78,7 @@ Create a file at `subdomains/yourname.json` in your fork of the repository.
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
   "subdomain": "yourname",
   "owner": {
     "github": "your-github-username"

@@ -1,0 +1,39 @@
+name: Schema Drift Guard
+
+on:
+  pull_request:
+    paths:
+      - "schemas/v1/subdomain.schema.json"
+      - ".github/workflows/schema-drift.yml"
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  drift:
+    name: Check schema mirror against ecosystem
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch canonical schema from ecosystem
+        run: |
+          curl -fsSL \
+            https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json \
+            -o /tmp/canonical.schema.json
+
+      - name: Strip deprecation $comment from local mirror
+        run: |
+          jq 'del(."$comment")' schemas/v1/subdomain.schema.json > /tmp/local.schema.json
+
+      - name: Diff
+        run: |
+          if ! diff -u /tmp/canonical.schema.json /tmp/local.schema.json; then
+            echo "::error::Local schemas/v1/subdomain.schema.json is out of sync with ecosystem canonical source."
+            echo "Run 'pnpm --filter @is-pinoy-dev/schemas generate:schema' in the ecosystem repo, copy the output here, and re-open this PR."
+            exit 1
+          fi
+          echo "Schema mirror is in sync."

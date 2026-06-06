@@ -48,7 +48,7 @@ Fill it in using the following format:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
   "subdomain": "yourname",
   "owner": {
     "github": "your-github-username"
@@ -65,7 +65,7 @@ If your provider also gave you a TXT verification record, include it too:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
   "subdomain": "yourname",
   "owner": {
     "github": "your-github-username"
