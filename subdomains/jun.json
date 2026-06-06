@@ -11,7 +11,7 @@
       "proxied": false
     },
     "TXT": {
-      "value": "vc-domain-verify=jun.is-pinoy.dev,e2044f53e2c93b639066",
+      "value": "vc-domain-verify=jun.is-pinoy.dev,637b0a63f5fdbfe63197",
       "provider": "vercel"
     }
   },
