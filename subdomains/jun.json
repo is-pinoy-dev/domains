@@ -12,8 +12,7 @@
   },
   "features": {
     "tools": {
-      "site-audit": true,
-      "og": true
+      "site-audit": true
     }
   }
 }
