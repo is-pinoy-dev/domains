@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "sticknologic",
+  "owner": {
+    "github": "sticknologic",
+    "email": "is-pinoy-dev@sticknologic.is-a.dev"
+  },
+  "records": {
+    "CNAME": {
+      "value": "cname.sticknologic.is-a.dev."
+    }
+  }
+}
