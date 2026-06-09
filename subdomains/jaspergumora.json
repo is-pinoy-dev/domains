@@ -7,6 +7,10 @@
   "records": {
     "CNAME": {
       "value": "personal-portfolio-two-mu-99.vercel.app."
+    },
+    "TXT": {
+      "provider": "vercel",
+      "value": "vc-domain-verify=is-pinoy.dev,a05ad3324c6c843cc4a2"
     }
   }
 }
