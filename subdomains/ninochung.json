@@ -3,8 +3,9 @@
   "owner": {
     "github": "NinoChung"
   },
-  "record": {
-    "type": "CNAME",
-    "value": "ninochung.github.io"
+  "records": {
+    "CNAME": {
+      "value": "ninochung.github.io"
+    }
   }
 }
