@@ -1,0 +1,10 @@
+﻿{
+  "subdomain": "ninochung",
+  "owner": {
+    "github": "NinoChung"
+  },
+  "record": {
+    "type": "CNAME",
+    "value": "ninochung.github.io"
+  }
+}
