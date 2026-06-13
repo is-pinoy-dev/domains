@@ -9,5 +9,6 @@
     "CNAME": {
       "value": "cname.sticknologic.is-a.dev."
     }
-  }
+  },
+  "destroy": true
 }
