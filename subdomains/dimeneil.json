@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "dimeneil",
+  "owner": {
+    "github": "3hird-K"
+  },
+  "records": {
+    "CNAME": {
+      "value": "3fadba598fd8bd40.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=dimeneil.is-pinoy.dev,8585ff03eedc4d0c8bec",
+      "provider": "vercel"
+    }
+  }
+}
