@@ -10,7 +10,7 @@
       "value": "6abe2c76b5beb219.vercel-dns-017.com."
     },
     "TXT": {
-      "value": "vc-domain-verify=liam.is-pinoy.dev,9e741f29517de4a25e6d",
+      "value": "vc-domain-verify=liam.is-pinoy.dev,0af8d54b664efcd06f1c",
       "provider": "vercel"
     }
   }
