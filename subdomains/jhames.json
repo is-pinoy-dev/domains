@@ -9,10 +9,8 @@
     "CNAME": {
       "value": "c64739458cb715bb.vercel-dns-017.com."
     },
-    "TXT": [
-      {
-        "value": "vc-domain-verify=jhamesmartin.is-pinoy.dev,080b574f008b553ca1c0"
-      }
-    ]
+    "TXT": {
+      "value": "vc-domain-verify=jhamesmartin.is-pinoy.dev,080b574f008b553ca1c0"
+    }
   }
 }
