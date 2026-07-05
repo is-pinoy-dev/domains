@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "jhamesmartin",
+  "owner": {
+    "github": "jrmph13",
+    "email": "Jhames.martin.dev@gmail.com"
+  },
+  "records": {
+    "CNAME": {
+      "value": "c64739458cb715bb.vercel-dns-017.com."
+    },
+    "TXT": [
+      {
+        "value": "vc-domain-verify=jhamesmartin.is-pinoy.dev,080b574f008b553ca1c0"
+      }
+    ]
+  }
+}
