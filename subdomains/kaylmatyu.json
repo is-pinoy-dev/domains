@@ -1,0 +1,16 @@
+{
+    "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+    "subdomain": "kaylmatyu",
+    "owner": {
+      "github": "kayl10913"
+    },
+    "records": {
+      "CNAME": {
+        "value": "a959edc4ca488c9d.vercel-dns-017.com."
+      },
+      "TXT": {
+        "value": "vc-domain-verify=kaylmatyu.is-pinoy.dev,b0e84157b80e67e46ca0",
+        "provider": "vercel"
+      }
+    }
+  }
