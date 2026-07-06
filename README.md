@@ -125,6 +125,7 @@ You can combine record types. For example, use `CNAME` for your site and `TXT` f
 Step-by-step instructions for finding your DNS values on popular hosting platforms:
 
 - [Vercel](docs/providers/vercel.md)
+- [GitHub Pages](docs/providers/github-pages.md)
 
 ---
 

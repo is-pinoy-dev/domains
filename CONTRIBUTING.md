@@ -32,6 +32,7 @@ Before creating your JSON file, you need the CNAME (and optionally TXT) record v
 **Not sure where to find them?** Follow the guide for your platform:
 
 - [Vercel](docs/providers/vercel.md)
+- [GitHub Pages](docs/providers/github-pages.md)
 
 ---
 
