@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "aj-castillo",
+  "owner": {
+    "github": "your-github-username"
+  },
+  "records": {
+    "CNAME": {
+      "value": "d97ba778f40dbc1a.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=aj-castillo.is-pinoy.dev,c01ab71cbf5195bae389",
+      "provider": "vercel"
+    }
+  }
+}
