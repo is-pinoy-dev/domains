@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "sajed-mendoza",
+  "owner": {
+    "github": "qppd"
+  },
+  "records": {
+    "CNAME": {
+      "value": "b1eceaacc9d5280f.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=sajed-mendoza.is-pinoy.dev,68a460f9e346fa1e08fb",
+      "provider": "vercel"
+    }
+  }
+}
