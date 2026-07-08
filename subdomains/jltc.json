@@ -1,0 +1,10 @@
+{
+  "subdomain": "jltc",
+  "owner": {
+    "github": "MR-JLTC"
+  },
+  "record": {
+    "type": "CNAME",
+    "value": "jltc.netlify.app/"
+  }
+}
