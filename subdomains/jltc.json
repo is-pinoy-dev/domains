@@ -1,10 +1,9 @@
 {
-  "subdomain": "jltc",
   "owner": {
-    "github": "MR-JLTC"
+    "username": "MR-JLTC",
+    "email": "darkages38@gmail.com"
   },
-  "record": {
-    "type": "CNAME",
-    "value": "deploy-preview-123--jltc.netlify.app"
+  "records": {
+    "CNAME": "jltc.netlify.app"
   }
 }
