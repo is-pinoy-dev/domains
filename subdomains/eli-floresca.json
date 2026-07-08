@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "eli-floresca",
+  "owner": {
+    "github": "elli1216"
+  },
+  "records": {
+    "CNAME": {
+      "value": "b271503386bb54ac.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=eli-floresca.is-pinoy.dev,1175e69c4090dfeca214",
+      "provider": "vercel"
+    }
+  }
+}
