@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "jubyneilvaliao",
+  "owner": {
+    "github": "xf00889"
+  },
+  "records": {
+    "CNAME": {
+      "value": "193ce708079779d0.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=jubyneilvaliao.is-pinoy.dev,e6b86dc0afbc65cce6e6",
+      "provider": "vercel"
+    }
+  }
+}
+
