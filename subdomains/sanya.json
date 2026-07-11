@@ -6,7 +6,11 @@
   },
   "records": {
     "CNAME": {
-      "value": "xxxxxxxxxxxxxxxx.vercel-dns-017.com."
+      "value": "https://snylum.github.io/retro-pixel-portfolio/"
+      
+  "TXT": {
+      "value": "_github-pages-challenge-snylum.sanya",
+      "provider": "github"
     }
   }
 }
