@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "kendrixbrosas",
+  "owner": {
+    "github": "kndrxxe"
+  },
+  "records": {
+    "CNAME": {
+      "value": "1f72c87697115b42.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=kendrixbrosas.is-pinoy.dev,a158b36ede3e31eb2c6f",
+      "provider": "vercel"
+    }
+  }
+}
