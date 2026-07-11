@@ -68,3 +68,90 @@ jobs:
           github-token: ${{ steps.app-token.outputs.token }}
           cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+
+      - name: Safe Browsing check
+        if: steps.detect.outputs.has_subdomain_changes == 'true'
+        env:
+          SAFE_BROWSING_API_KEY: ${{ secrets.GOOGLE_SAFE_BROWSING_API_KEY }}
+          BOT_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$SAFE_BROWSING_API_KEY" ]; then
+            echo "::notice::GOOGLE_SAFE_BROWSING_API_KEY is not set; skipping Safe Browsing check"
+            exit 0
+          fi
+
+          files=$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER/files" \
+            --jq '.[].filename | select(startswith("subdomains/") and endswith(".json"))')
+
+          # Collect CNAME/A targets from the changed subdomain files
+          targets='[]'
+          for file in $files; do
+            [ -f "$file" ] || continue
+            t=$(jq -c '
+              if .destroy == true then [] else
+                [ ((.records.CNAME // empty) | if type=="array" then .[] else . end | .value | rtrimstr(".")),
+                  ((.records.A // empty) | if type=="array" then .[] else . end | .value) ]
+                | map(select(test("^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$")))
+                | unique
+              end' "$file")
+            targets=$(jq -cn --argjson a "$targets" --argjson b "$t" '$a + $b | unique')
+          done
+
+          if [ "$(jq 'length' <<< "$targets")" -eq 0 ]; then
+            echo "No CNAME/A targets to check"
+            exit 0
+          fi
+
+          payload=$(jq -cn --argjson hosts "$targets" '{
+            client: {clientId: "is-pinoy-dev-domains", clientVersion: "1.0.0"},
+            threatInfo: {
+              threatTypes: ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
+              platformTypes: ["ANY_PLATFORM"],
+              threatEntryTypes: ["URL"],
+              threatEntries: [$hosts[] | {url: ("http://" + . + "/")}]
+            }
+          }')
+
+          http_code=$(curl -s -o response.json -w '%{http_code}' -X POST \
+            -H 'Content-Type: application/json' -d "$payload" \
+            "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=$SAFE_BROWSING_API_KEY")
+          if [ "$http_code" != "200" ]; then
+            echo "::error::Safe Browsing API request failed (HTTP $http_code)"
+            jq 'del(.error.details)' response.json || true
+            exit 1
+          fi
+
+          report=$(jq -r --argjson hosts "$targets" '
+            (.matches // []) as $matches |
+            ( ["<!-- pareng-gar:safe-browsing -->",
+               "## 🛡️ Google Safe Browsing Report",
+               "",
+               "| Target | Verdict |",
+               "| --- | --- |"]
+            + [ $hosts[] as $h |
+                ([$matches[] | select(.threat.url == ("http://" + $h + "/")) | .threatType] | unique) as $t |
+                if ($t | length) > 0
+                then "| `\($h)` | ⚠️ **\($t | join(", "))** |"
+                else "| `\($h)` | ✅ No threats found |"
+                end ]
+            + ["",
+               "_Targets are the CNAME/A record values of the changed subdomain files, checked against Google Safe Browsing threat lists (MALWARE, SOCIAL_ENGINEERING, UNWANTED_SOFTWARE, POTENTIALLY_HARMFUL_APPLICATION)._"]
+            ) | join("\n")' response.json)
+
+          echo "$report" >> "$GITHUB_STEP_SUMMARY"
+
+          comment_id=$(GH_TOKEN="$BOT_TOKEN" gh api "repos/$GH_REPO/issues/$PR_NUMBER/comments" --paginate \
+            --jq '[.[] | select(.body | startswith("<!-- pareng-gar:safe-browsing -->"))][0].id // empty')
+          if [ -n "$comment_id" ]; then
+            GH_TOKEN="$BOT_TOKEN" gh api --silent -X PATCH "repos/$GH_REPO/issues/comments/$comment_id" -f body="$report"
+          else
+            GH_TOKEN="$BOT_TOKEN" gh api --silent -X POST "repos/$GH_REPO/issues/$PR_NUMBER/comments" -f body="$report"
+          fi
+
+          match_count=$(jq '.matches // [] | length' response.json)
+          if [ "$match_count" -gt 0 ]; then
+            echo "::error::Google Safe Browsing flagged $match_count threat match(es) — see the PR comment for details"
+            exit 1
+          fi
