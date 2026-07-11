@@ -1,0 +1,10 @@
+{
+  "subdomain": "wingedge",
+  "owner": {
+    "github": "wingedge"
+  },
+  "record": {
+    "type": "CNAME",
+    "value": "104.236.76.57"
+  }
+}
