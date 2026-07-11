@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "sanya",
+  "owner": {
+    "github": "snylum"
+  },
+  "records": {
+    "CNAME": {
+      "value": "xxxxxxxxxxxxxxxx.vercel-dns-017.com."
+    }
+  }
+}
