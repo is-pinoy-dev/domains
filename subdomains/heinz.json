@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "heinz",
+  "owner": {
+    "github": "roy-heinrich",
+    "email": "royheinrich.delgado0@gmail.com"
+  },
+  "records": {
+    "CNAME": {
+      "value": "01525e8ae6097914.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=heinz.is-pinoy.dev,81621779fe29ac1d3ac8",
+      "provider": "vercel"
+    }
+  }
+}

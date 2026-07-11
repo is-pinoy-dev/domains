@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "lazuee",
+  "owner": {
+    "github": "lazuee",
+    "email": "lazuee.dev@gmail.com"
+  },
+  "records": {
+    "CNAME": {
+      "value": "lazuee.pages.dev."
+    }
+  },
+  "features": {
+    "tools": {
+      "site-audit": true,
+      "og": true
+    }
+  }
+}
