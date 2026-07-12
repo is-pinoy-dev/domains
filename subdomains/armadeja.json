@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+    "subdomain": "armadeja",
+    "owner": {
+        "github": "Tokikaze0",
+        "email": "rwinmadeja@gmail.com"
+    },
+    "records": {
+        "CNAME": {
+            "value": "818d8b3c4b86e3a6.vercel-dns-017.com."
+        },
+        "TXT": {
+            "value": "vc-domain-verify=armadeja.is-pinoy.dev,5f483a72c3271b7f631c",
+            "provider": "vercel"
+        }
+    }
+}
