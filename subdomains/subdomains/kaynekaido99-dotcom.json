@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
-  "subdomain": "kaynekaido99-dotcom",
+  "subdomain": "kaynekaido99-dotcom.",
   "owner": {
     "github": "Bokie"
   },
