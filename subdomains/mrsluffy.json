@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "mrsluffy",
+  "owner": {
+    "github": "MrSluffy"
+  },
+  "records": {
+    "CNAME": {
+      "value": "dcf54fa95ab3751b.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=mrsluffy.is-pinoy.dev,bd4c10bb6c8aebd9b627",
+      "provider": "vercel"
+    }
+  }
+}
