@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "ramisys",
+  "owner": {
+    "github": "ramisys"
+  },
+  "records": {
+    "CNAME": {
+      "value": "ramisys.netlify.app."
+    }
+  }
+}
