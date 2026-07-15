@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "brgy-mulawin",
+  "owner": {
+    "github": "EarlClydeeee"
+  },
+  "records": {
+    "CNAME": {
+      "value": "f1e0dfc8bb3c5200.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=brgy-mulawin.is-pinoy.dev,c2cb24de877f1360fb71",
+      "provider": "vercel"
+    }
+  }
+}
