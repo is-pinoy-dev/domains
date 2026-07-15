@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "rdejesus",
+  "owner": {
+    "github": "rdejesus0528"
+  },
+  "records": {
+    "CNAME": {
+      "value": "228d007d4af1c742.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=rdejesus.is-pinoy.dev,837a1340cb6312294c83",
+      "provider": "vercel"
+    }
+  }
+}

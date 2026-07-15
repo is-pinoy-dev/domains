@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "jcchikikomori",
+  "owner": {
+    "github": "jcchikikomori"
+  },
+  "records": {
+    "CNAME": {
+      "value": "37d276efd4b22ece.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=jcchikikomori.is-pinoy.dev,98cfe8f7a814a93d72c3",
+      "provider": "vercel"
+    }
+  },
+  "features": {
+    "tools": {
+      "site-audit": true,
+      "og": true
+    }
+  }
+}
