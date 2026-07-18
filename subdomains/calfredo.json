@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "calfredo",
+  "owner": {
+    "github": "Calfredo23"
+  },
+  "records": {
+    "CNAME": {
+      "value": "599257bc010c38ef.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=calfredo.is-pinoy.dev,f119e5c8ea0fb5077b77",
+      "provider": "vercel"
+    }
+  }
+}
