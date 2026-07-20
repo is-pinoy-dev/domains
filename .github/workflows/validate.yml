@@ -76,6 +76,27 @@ jobs:
           cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
 
+      # Reject re-adding a single-use vc-domain-verify TXT for a domain that is
+      # already verified and live on Vercel (the scheduled cleanup removed it;
+      # resurrecting it just churns the record). Probes only this PR's changed
+      # files. Needs no Cloudflare creds — it only reads files and probes HTTP.
+      # (Requires a CLI release with `vercel-cleanup --check`; the composite
+      # action above installs @is-pinoy-dev/cli@latest onto the job PATH.)
+      - name: Reject re-added verification TXTs
+        if: steps.detect.outputs.has_subdomain_changes == 'true'
+        env:
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          files=$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER/files" --paginate \
+            --jq '.[].filename | select(startswith("subdomains/") and endswith(".json"))')
+          if [ -z "$files" ]; then
+            echo "No changed subdomain files to check."
+            exit 0
+          fi
+          # shellcheck disable=SC2086
+          is-pinoy registry vercel-cleanup --dir ./subdomains --check --only $files
+
       - name: Safe Browsing check
         if: steps.detect.outputs.has_subdomain_changes == 'true'
         env:
