@@ -1,0 +1,107 @@
+name: Vercel TXT Cleanup
+
+# Periodic garbage-collection of single-use Vercel `vc-domain-verify` TXT
+# challenges.
+#
+# Why a schedule and not PR CI: whether a challenge is safe to delete depends on
+# Vercel's verification state, which flips minutes-to-days after a subdomain's PR
+# merges and independently of any PR. So the decision can never belong to a
+# single PR's review — it's a time-based, whole-registry concern.
+#
+# Safety: verification lives entirely in the probe. `vercel-cleanup` only strips
+# a TXT when https://<subdomain>/ is served by Vercel's edge with no
+# `x-vercel-error` (i.e. the domain is attached and verified). The stripped files
+# are proposed as a PR for human review — nothing is deleted from Cloudflare
+# here. Merging the PR triggers the existing Sync workflow, which reconciles the
+# registry and removes the now-orphaned `_vercel` records.
+
+on:
+  schedule:
+    - cron: "0 5 * * 1" # Mondays 05:00 UTC (offset from schema-drift's 06:00)
+  workflow_dispatch:
+
+concurrency:
+  group: vercel-txt-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Prune verified verification TXTs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # branch push + PR creation use the app token below
+    steps:
+      - name: Generate Pareng Gar token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout domains
+        uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Install CLI
+        run: npm install -g @is-pinoy-dev/cli@latest
+
+      - name: Probe and strip verified verification TXTs
+        run: |
+          set -o pipefail
+          is-pinoy registry vercel-cleanup --dir ./subdomains --write 2>&1 | tee cleanup.log
+          # Drop ANSI colour so the log reads cleanly inside the PR body.
+          sed -i 's/\x1b\[[0-9;]*[mGKHFJ]//g' cleanup.log
+
+      - name: Open or update cleanup PR
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          if git diff --quiet -- subdomains/; then
+            echo "No verified verification TXT records to prune."
+            exit 0
+          fi
+
+          BRANCH="chore/vercel-txt-cleanup"
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${APP_SLUG}[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add subdomains/
+          git commit -m "chore: prune verified Vercel verification TXT records"
+          git push --force-with-lease -u origin "$BRANCH"
+
+          {
+            echo "## 🧹 Automated Vercel TXT cleanup"
+            echo
+            echo "The subdomains below are attached and verified on Vercel — their"
+            echo "edge serves the site with no \`x-vercel-error\` — so the single-use"
+            echo "\`vc-domain-verify\` challenge is dead weight and has been removed"
+            echo "from their JSON files."
+            echo
+            echo "Merging this PR triggers the **Sync** workflow, which deletes the"
+            echo "now-orphaned \`_vercel\` TXT records from Cloudflare. Nothing has been"
+            echo "deleted from Cloudflare yet."
+            echo
+            echo "<details><summary>Probe results</summary>"
+            echo
+            echo '```'
+            cat cleanup.log
+            echo '```'
+            echo
+            echo "</details>"
+          } > pr-body.md
+
+          if gh pr view "$BRANCH" --json state --jq '.state' 2>/dev/null | grep -q OPEN; then
+            gh pr edit "$BRANCH" --body-file pr-body.md
+            echo "Updated existing cleanup PR."
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore: prune verified Vercel verification TXT records" \
+              --body-file pr-body.md
+          fi
