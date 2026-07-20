@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "asher",
+  "owner": {
+    "github": "99lash"
+  },
+  "records": {
+    "CNAME": {
+      "value": "66542364edcf474b.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=asher.is-pinoy.dev,fb5271e8bc9fb3666213",
+      "provider": "vercel"
+    }
+  }
+}
