@@ -45,7 +45,13 @@ jobs:
           fi
 
       - name: Validate subdomain ownership
-        if: steps.detect.outputs.has_subdomain_changes == 'true'
+        # Skip for PRs authored by our own app bot (e.g. the scheduled Vercel
+        # TXT cleanup): those only strip verified verification records and never
+        # touch owner.github, so an owner==author check would always fail. This
+        # is keyed on the app slug, which a human PR author cannot spoof.
+        if: >-
+          steps.detect.outputs.has_subdomain_changes == 'true' &&
+          github.event.pull_request.user.login != format('{0}[bot]', steps.app-token.outputs.app-slug)
         env:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
