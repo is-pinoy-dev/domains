@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+    "subdomain": "jdweavestech",
+    "owner": {
+        "github": "jdweavestech"
+    },
+    "records": {
+        "CNAME": 
+        {
+            "value": "c5462071f431b741.vercel-dns-017.com."
+        },
+        "TXT": 
+        {
+            "value": "vc-domain-verify=jdweavestech.is-pinoy.dev,e78cbe0d97519d5c4f5c",
+            "provider": "vercel"
+        }
+    }
+}
