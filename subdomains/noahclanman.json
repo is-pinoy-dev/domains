@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "noahclanman",
+  "owner": {
+    "github": "noahclanman"
+  },
+  "records": {
+    "CNAME": {
+      "value": "44127e7369e61a56.vercel-dns-017.com."
+    },
+    "TXT": {
+    "value": "vc-domain-verify=noahclanman.is-pinoy.dev,b1d9a8381ddab7051f94",
+    "provider": "vercel"
+   }
+  }
+}
