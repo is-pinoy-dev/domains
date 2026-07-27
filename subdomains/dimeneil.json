@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "3fadba598fd8bd40.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=dimeneil.is-pinoy.dev,8585ff03eedc4d0c8bec",
-      "provider": "vercel"
     }
   }
 }

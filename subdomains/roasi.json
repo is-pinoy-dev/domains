@@ -8,10 +8,6 @@
   "records": {
     "CNAME": {
       "value": "6e9801a78f000673.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=roasi.is-pinoy.dev,341eca9541883058961f",
-      "provider": "vercel"
     }
   }
 }
