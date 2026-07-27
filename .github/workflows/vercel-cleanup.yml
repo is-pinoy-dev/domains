@@ -74,12 +74,23 @@ jobs:
             exit 0
           fi
 
+          # One rolling branch, force-pushed weekly and rebuilt from main each
+          # run. Keep this name in sync with the ownership-check exemption in
+          # validate.yml, which recognises the cleanup PR by this branch.
           BRANCH="chore/vercel-txt-cleanup"
           git config user.name "Dyep"
           git config user.email "dyep@is-pinoy.dev"
           git checkout -B "$BRANCH"
           git add subdomains/
           git commit -m "chore: prune verified Vercel verification TXT records"
+
+          # checkout only fetched main, so there is no origin/$BRANCH for
+          # --force-with-lease to lease against. Without this fetch the push is
+          # rejected as "stale info" on every run after the branch first exists
+          # — i.e. every run from the second onward. Fetching it gives the lease
+          # a base while still refusing to clobber commits pushed since. The
+          # fetch fails harmlessly on the first run, when the branch is new.
+          git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" || true
           git push --force-with-lease -u origin "$BRANCH"
 
           {
