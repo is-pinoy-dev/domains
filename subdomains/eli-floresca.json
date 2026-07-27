@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "b271503386bb54ac.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=eli-floresca.is-pinoy.dev,1175e69c4090dfeca214",
-      "provider": "vercel"
     }
   }
 }

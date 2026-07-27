@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "5ab723369077ac19.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=ghost.is-pinoy.dev,044e719cb80959fd8205",
-      "provider": "vercel"
     }
   }
 }

@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "598e6a0b93317324.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=kench.is-pinoy.dev,164822d957730569154b",
-      "provider": "vercel"
     }
   }
 }

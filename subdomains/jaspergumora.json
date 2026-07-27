@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "c388443d969dd631.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=jaspergumora.is-pinoy.dev,cf2f9e66281a7055fa84",
-      "provider": "vercel"
     }
   }
 }

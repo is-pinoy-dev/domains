@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "0760211f1c6db46d.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=kaloy.is-pinoy.dev,942a4411fbd486d59ad3",
-      "provider": "vercel"
     }
   }
 }
