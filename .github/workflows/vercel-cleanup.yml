@@ -29,19 +29,26 @@ jobs:
     name: Prune verified verification TXTs
     runs-on: ubuntu-latest
     permissions:
-      contents: read # branch push + PR creation use the app token below
+      contents: read # branch push + PR creation use PAT_TOKEN below
     steps:
-      - name: Generate Pareng Gar token
-        id: app-token
-        uses: actions/create-github-app-token@v3
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      # This repo is public, so an unset PAT_TOKEN lets checkout succeed
+      # anonymously and only surfaces as a confusing 403 at push time, after the
+      # whole probe has run. Fail fast instead.
+      - name: Verify PAT_TOKEN is configured
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          if [ -z "$PAT_TOKEN" ]; then
+            echo "::error::PAT_TOKEN secret is not set — it needs Contents and Pull requests write access on this repo."
+            exit 1
+          fi
 
+      # PAT_TOKEN, not GITHUB_TOKEN: a PR opened with GITHUB_TOKEN does not
+      # trigger other workflows, and the cleanup PR needs Validate to run on it.
       - name: Checkout domains
         uses: actions/checkout@v7
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -60,8 +67,7 @@ jobs:
 
       - name: Open or update cleanup PR
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           if git diff --quiet -- subdomains/; then
             echo "No verified verification TXT records to prune."
@@ -69,8 +75,8 @@ jobs:
           fi
 
           BRANCH="chore/vercel-txt-cleanup"
-          git config user.name "${APP_SLUG}[bot]"
-          git config user.email "${APP_SLUG}[bot]@users.noreply.github.com"
+          git config user.name "Dyep"
+          git config user.email "dyep@is-pinoy.dev"
           git checkout -B "$BRANCH"
           git add subdomains/
           git commit -m "chore: prune verified Vercel verification TXT records"
