@@ -8,10 +8,6 @@
   "records": {
     "CNAME": {
       "value": "01525e8ae6097914.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=heinz.is-pinoy.dev,81621779fe29ac1d3ac8",
-      "provider": "vercel"
     }
   }
 }

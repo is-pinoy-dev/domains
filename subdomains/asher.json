@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "66542364edcf474b.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=asher.is-pinoy.dev,fb5271e8bc9fb3666213",
-      "provider": "vercel"
     }
   }
 }
