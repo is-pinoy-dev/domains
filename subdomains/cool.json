@@ -1,0 +1,15 @@
+{
+  "subdomain": "cool",
+  "owner": {
+    "github": "bosquejun"
+  },
+  "portfolio": {
+    "template": "bubblegum"
+  },
+  "records": {
+    "CNAME": {
+      "value": "portfolio.is-pinoy.dev",
+      "proxied": true
+    }
+  }
+}
