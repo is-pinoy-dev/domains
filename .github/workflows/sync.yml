@@ -58,4 +58,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          # Script name of the Worker fronting hosted portfolios. Must match
+          # `name` in the ecosystem repo's tools/portfolio-proxy/worker/wrangler.toml.
+          # Set, sync also reconciles one Workers route per subdomain carrying a
+          # `portfolio` block; unset, route handling is skipped entirely.
+          PORTFOLIO_WORKER: tools-portfolio-proxy
         run: is-pinoy registry sync --dir ./subdomains --yes
