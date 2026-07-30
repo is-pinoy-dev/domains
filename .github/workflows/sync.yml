@@ -62,5 +62,9 @@ jobs:
           # `name` in the ecosystem repo's tools/portfolio-proxy/worker/wrangler.toml.
           # Set, sync also reconciles one Workers route per subdomain carrying a
           # `portfolio` block; unset, route handling is skipped entirely.
-          PORTFOLIO_WORKER: tools-portfolio-proxy
+          #
+          # Held unset: setting it makes every sync list Workers routes up front,
+          # which CLOUDFLARE_API_TOKEN is not scoped for. Restore this line once
+          # the token carries Workers Routes: Edit on the zone.
+          # PORTFOLIO_WORKER: tools-portfolio-proxy
         run: is-pinoy registry sync --dir ./subdomains --yes
