@@ -45,7 +45,6 @@ jobs:
         env:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           # .mergeable is computed asynchronously and reads null until GitHub
@@ -66,10 +65,11 @@ jobs:
               exit 1
               ;;
             *)
-              # No test-merge commit to check out — fall back to the head sha so
-              # the PR still gets validated, at the cost of the staleness above.
-              echo "::notice::GitHub has not computed a merge commit for this PR yet; validating the head commit instead."
-              echo "ref=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+              # Validating the head would reintroduce the stale-base false
+              # positives this step exists to prevent. Fail closed and let the
+              # workflow rerun once GitHub has computed mergeability instead.
+              echo "::error::GitHub has not computed a merge result for this pull request yet. Re-run this workflow in a few moments."
+              exit 1
               ;;
           esac
 
