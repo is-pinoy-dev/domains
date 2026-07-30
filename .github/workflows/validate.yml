@@ -25,10 +25,58 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
+      # Every check below reads subdomain JSON off disk, so what we check out
+      # decides what they see. The PR head is the wrong answer: a branch cut
+      # before an unrelated commit landed on main still carries the pre-merge
+      # content of files it never touched, which surfaces as failures and
+      # phantom diffs the contributor cannot see in their own PR. The concrete
+      # case: the weekly Vercel TXT cleanup prunes a verified vc-domain-verify
+      # TXT on main, and any PR branched before that still has the TXT in its
+      # head commit — so "Reject re-added verification TXTs" rejects a PR that
+      # re-adds nothing, and the sync dry-run reports phantom record changes.
+      #
+      # refs/pull/N/merge is the test-merge commit GitHub maintains for every
+      # mergeable PR: base + head, exactly what merging would produce. It holds
+      # the same untrusted contributor content as the head sha, so this is no
+      # more privileged than the checkout it replaces (still data-only, still
+      # sparse to subdomains/, still never executed).
+      - name: Resolve ref to validate
+        id: ref
+        env:
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          # .mergeable is computed asynchronously and reads null until GitHub
+          # finishes the test merge, so poll rather than trust the first answer.
+          mergeable=null
+          for _ in 1 2 3 4 5; do
+            mergeable=$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER" --jq '.mergeable' 2>/dev/null || echo null)
+            [ "$mergeable" = "null" ] || break
+            sleep 3
+          done
+
+          case "$mergeable" in
+            true)
+              echo "ref=refs/pull/$PR_NUMBER/merge" >> "$GITHUB_OUTPUT"
+              ;;
+            false)
+              echo "::error::This pull request conflicts with $BASE_REF. Merge the latest $BASE_REF into your branch, resolve the conflicts, and push again."
+              exit 1
+              ;;
+            *)
+              # No test-merge commit to check out — fall back to the head sha so
+              # the PR still gets validated, at the cost of the staleness above.
+              echo "::notice::GitHub has not computed a merge commit for this PR yet; validating the head commit instead."
+              echo "ref=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
       - name: Checkout domains
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ steps.ref.outputs.ref }}
           allow-unsafe-pr-checkout: true
           sparse-checkout: subdomains
           sparse-checkout-cone-mode: false
