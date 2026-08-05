@@ -1,0 +1,10 @@
+{
+  "subdomain": "rocksnyder12",
+  "owner": {
+    "github": "rocksnyder12"
+  },
+  "record": {
+    "type": "CNAME",
+    "value": "rocksnyder12.github.io"
+  }
+}
