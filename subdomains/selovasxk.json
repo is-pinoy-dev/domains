@@ -1,9 +1,12 @@
 {
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
   "subdomain": "selovasxk",
   "owner": {
     "github": "saflonaiuton"
   },
   "records": {
-    "CNAME": "selovasxk.vercel.app."
+    "CNAME": {
+      "value": "selovasxk.vercel.app."
+    }
   }
 }
