@@ -1,8 +1,9 @@
 {
+  "subdomain": "selovasxk",
   "owner": {
-    "username": "saflonaiuton"
+    "github": "saflonaiuton"
   },
   "records": {
-    "CNAME": "cname.vercel-dns.com"
+    "CNAME": "selovasxk.vercel.app."
   }
 }
