@@ -11,5 +11,6 @@
       "value": "portfolio.is-pinoy.dev",
       "proxied": true
     }
-  }
+  },
+  "destroy": true
 }
