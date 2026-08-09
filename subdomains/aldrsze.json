@@ -6,11 +6,17 @@
   },
   "records": {
     "CNAME": {
-      "value": "2c7825caebad93ea.vercel-dns-017.com."
+      "value": "2c7825caebad93ea.vercel-dns-017.com.",
+      "proxied": true
     },
     "TXT": {
       "value": "vc-domain-verify=aldrsze.is-pinoy.dev,319fa6832abf97c3e198",
       "provider": "vercel"
+    }
+  },
+  "features": {
+    "tools": {
+      "site-audit": true
     }
   }
 }
