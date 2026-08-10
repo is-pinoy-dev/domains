@@ -15,6 +15,11 @@
         "github": {
           "type": "string"
         },
+        "id": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
         "email": {
           "type": "string",
           "format": "email",
@@ -191,8 +196,54 @@
             }
           },
           "additionalProperties": false
+        },
+        "analytics": {
+          "type": "boolean"
         }
       },
+      "additionalProperties": false
+    },
+    "portfolio": {
+      "type": "object",
+      "properties": {
+        "template": {
+          "type": "string",
+          "enum": [
+            "terminal",
+            "pixel-card",
+            "minimal",
+            "concrete",
+            "broadsheet",
+            "phosphor",
+            "draft",
+            "bubblegum",
+            "grid",
+            "bento",
+            "noir",
+            "solar"
+          ]
+        },
+        "theme": {
+          "type": "string",
+          "enum": [
+            "gold-dark",
+            "mono",
+            "matrix",
+            "midnight",
+            "crimson",
+            "sunset"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "template"
+      ],
       "additionalProperties": false
     },
     "destroy": {
