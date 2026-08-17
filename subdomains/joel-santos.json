@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "941a3b9aa7be12bf.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=joel-santos.is-pinoy.dev,288e222e15ce8c4668c9",
-      "provider": "vercel"
     }
   }
 }
