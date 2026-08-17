@@ -83,6 +83,14 @@ Colors follow state: amber while open, green on merge, red on close-unmerged.
 Order on close matters: **retag → reply → archive**. An archived thread cannot
 be posted into without reviving it first.
 
+Retagging preserves non-status tags. Discord's `applied_tags` is a full
+replacement rather than a merge, so writing the status tag alone would silently
+wipe any tag a human applied — the forum already carries a `Portfolio` tag. The
+workflow reads the thread's current tags, drops only the three status tags, and
+prepends the new one. Discord caps a thread at 5 tags, so the result is sliced
+to 5 with the status tag first, guaranteeing status survives and the oldest
+extras are shed instead.
+
 Archiving keeps the active list an accurate queue. It does not lock the thread,
 so a contributor returning with a question revives it by replying.
 

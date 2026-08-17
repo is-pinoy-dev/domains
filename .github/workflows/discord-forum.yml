@@ -289,6 +289,21 @@ jobs:
             return 0
           }
 
+          # applied_tags is a full replacement, not a merge, so setting the
+          # status tag naively would wipe any tag a human added (Portfolio, and
+          # anything added later). Read the thread's current tags, drop only the
+          # three status tags, and prepend the new one. Discord caps a thread at
+          # 5 tags, so the slice keeps status and sheds the oldest extras.
+          retag() {
+            local thread=$1 new=$2 tags
+            discord GET "/channels/$thread" || return 1
+            tags=$(jq -c --arg new "$new" \
+              --arg a "$TAG_NEEDS_REVIEW" --arg b "$TAG_LIVE" --arg c "$TAG_CLOSED" '
+              (((.applied_tags // []) - [$a, $b, $c]) as $keep | [$new] + $keep | .[0:5])' d_resp.json)
+            discord PATCH "/channels/$thread" \
+              "$(jq -cn --argjson t "$tags" '{applied_tags: $t, archived: false}')"
+          }
+
           merged=$(jq -r '.merged' pr.json)
           pr_url=$(jq -r '.html_url' pr.json)
 
@@ -339,9 +354,7 @@ jobs:
             # Order matters: retag (which also revives the thread if Discord
             # auto-archived it), then reply, then archive. Posting into an
             # archived thread requires reviving it first.
-            discord PATCH "/channels/$thread" \
-              "$(jq -cn --arg t "$tag" '{applied_tags: [$t], archived: false}')" \
-              || fail "could not retag thread $thread"
+            retag "$thread" "$tag" || fail "could not retag thread $thread"
 
             discord POST "/channels/$thread/messages" \
               "$(jq -cn --arg c "$reply" '{content: $c}')" \
@@ -356,9 +369,7 @@ jobs:
             # than creating a duplicate.
             thread=$(find_thread) || fail "could not list threads"
             if [ -n "$thread" ]; then
-              discord PATCH "/channels/$thread" \
-                "$(jq -cn --arg t "$tag" '{applied_tags: [$t], archived: false}')" \
-                || fail "could not revive thread $thread"
+              retag "$thread" "$tag" || fail "could not revive thread $thread"
               echo "Revived thread $thread" >> "$GITHUB_STEP_SUMMARY"
             else
               discord POST "/channels/$FORUM_ID/threads" "$payload" \
