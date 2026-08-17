@@ -64,7 +64,7 @@ The `email` field is optional. The filename must match the `subdomain` field exa
 
 | Type | Use case | Example value |
 |------|----------|---------------|
-| `CNAME` | Hosted platforms (Vercel, Netlify, GitHub Pages) | `yoursite.vercel.app.` |
+| `CNAME` | Hosted platforms (Vercel, GitHub Pages, Cloudflare Pages) | `yoursite.vercel.app.` |
 | `A` | Custom server / VPS | `203.0.113.1` |
 | `TXT` | Domain verification (Google, email providers) | `google-site-verification=...` |
 
@@ -124,8 +124,9 @@ You can combine record types. For example, use `CNAME` for your site and `TXT` f
 
 Step-by-step instructions for finding your DNS values on popular hosting platforms:
 
-- [Vercel](docs/providers/vercel.md)
-- [GitHub Pages](docs/providers/github-pages.md)
+- [Vercel](https://docs.is-pinoy.dev/guides/providers/vercel)
+- [GitHub Pages](https://docs.is-pinoy.dev/guides/providers/github-pages)
+- [Cloudflare Pages](https://docs.is-pinoy.dev/guides/providers/cloudflare-pages)
 
 ---
 
