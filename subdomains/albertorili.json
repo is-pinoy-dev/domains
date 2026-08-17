@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "albertorili",
+  "owner": {
+    "github": "rcmtreb"
+  },
+  "records": {
+    "CNAME": {
+      "value": "68c872482870c0d1.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=albertorili.is-pinoy.dev,0129f4e223584a28dc91",
+      "provider": "vercel"
+    }
+  }
+}
