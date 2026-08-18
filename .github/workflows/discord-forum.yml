@@ -1,0 +1,379 @@
+name: Discord Forum
+
+# Mirrors subdomain registration PRs into a Discord forum channel: one thread
+# per PR, created when it opens, retagged and archived when it closes.
+#
+# pull_request_target is required, not a convenience: almost every PR here comes
+# from a fork, and fork PRs on plain `pull_request` receive no secrets, so the
+# bot token would be empty. It is safe here because this workflow never checks
+# out or executes PR content — it reads subdomain JSON through the API as data,
+# and no untrusted value is ever interpolated into a shell via ${{ }}.
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to sync
+        required: true
+      dry_run:
+        description: Print payloads instead of posting to Discord
+        type: boolean
+        default: true
+
+# Not cancel-in-progress: an open and a close for the same PR are different
+# operations, and cancelling the first would strand a thread that never got
+# created but is about to be searched for.
+concurrency:
+  group: discord-forum-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  forum:
+    name: Sync Discord Thread
+    runs-on: ubuntu-latest
+    # Discord being down, rate limited, or misconfigured must never put a red X
+    # on a contributor's PR. Every failure path below also exits 0 on its own;
+    # this is the backstop for the ones that are not anticipated.
+    continue-on-error: true
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      DISCORD_API: https://discord.com/api/v10
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      GUILD_ID: ${{ vars.DISCORD_GUILD_ID }}
+      FORUM_ID: ${{ vars.DISCORD_FORUM_CHANNEL_ID }}
+      TAG_NEEDS_REVIEW: ${{ vars.DISCORD_TAG_NEEDS_REVIEW }}
+      TAG_LIVE: ${{ vars.DISCORD_TAG_LIVE }}
+      TAG_CLOSED: ${{ vars.DISCORD_TAG_CLOSED }}
+      DRY_RUN: ${{ inputs.dry_run }}
+      ROOT_DOMAIN: is-pinoy.dev
+    steps:
+      # Exits green rather than red when Discord has not been wired up yet, so
+      # merging this workflow before creating the bot does not break the repo.
+      - name: Check configuration
+        id: config
+        run: |
+          missing=
+          for var in DISCORD_BOT_TOKEN GUILD_ID FORUM_ID TAG_NEEDS_REVIEW TAG_LIVE TAG_CLOSED; do
+            [ -n "${!var}" ] || missing="$missing $var"
+          done
+          if [ -n "$missing" ]; then
+            echo "::notice::Discord forum sync skipped; not configured:$missing"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Everything downstream reads pr.json rather than the event payload, so
+      # the pull_request_target and workflow_dispatch paths share one code path
+      # and one source of truth.
+      - name: Resolve pull request
+        id: pr
+        if: steps.config.outputs.ready == 'true'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GH_REPO/pulls/$PR_NUMBER" > pr.json
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+          # workflow_dispatch has no event action, so derive the mode from the
+          # PR's own state instead of the trigger.
+          if [ "${{ github.event.action }}" = "closed" ] || \
+             { [ -z "${{ github.event.action }}" ] && [ "$(jq -r '.state' pr.json)" = "closed" ]; }; then
+            echo "mode=close" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=open" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check eligibility
+        id: gate
+        if: steps.config.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          skip=
+
+          [ "$(jq -r '.user.type' pr.json)" != "Bot" ] || skip="author is a bot"
+
+          # The scheduled Vercel TXT cleanup pushes with PAT_TOKEN, so it authors
+          # as a human and the bot check above does not catch it. Branch name must
+          # stay in sync with BRANCH in vercel-cleanup.yml.
+          if [ "$(jq -r '.head.repo.full_name' pr.json)" = "$GH_REPO" ] && \
+             [ "$(jq -r '.head.ref' pr.json)" = "chore/vercel-txt-cleanup" ]; then
+            skip="scheduled Vercel TXT cleanup"
+          fi
+
+          # Drafts are not review-ready. They post on ready_for_review instead.
+          if [ "$(jq -r '.draft' pr.json)" = "true" ]; then
+            skip="pull request is a draft"
+          fi
+
+          gh api "repos/$GH_REPO/pulls/$(jq -r '.number' pr.json)/files" --paginate \
+            --jq '[.[] | select(.filename | startswith("subdomains/") and endswith(".json"))]' \
+            | jq -s 'add' > files.json
+          [ "$(jq 'length' files.json)" -gt 0 ] || skip="no subdomain file changes"
+
+          if [ -n "$skip" ]; then
+            echo "::notice::Skipping Discord forum sync: $skip"
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build card
+        id: card
+        if: steps.gate.outputs.eligible == 'true'
+        run: |
+          set -euo pipefail
+          head_sha=$(jq -r '.head.sha' pr.json)
+
+          # One entry per changed subdomain file. A removed file has no content
+          # to fetch; a present file with "destroy": true is a removal request.
+          echo '[]' > entries.json
+          while IFS=$'\t' read -r path status; do
+            sub=$(basename "$path" .json)
+            if [ "$status" = "removed" ]; then
+              # A deleted file has no content left to read, so owner and record
+              # are unknowable from the PR alone.
+              entry=$(jq -cn --arg s "$sub" --arg f "$path" \
+                '{subdomain:$s, file:$f, action:"remove", record:"—", target:"—", owner:"—"}')
+            else
+              gh api "repos/$GH_REPO/contents/$path?ref=$head_sha" \
+                -H "Accept: application/vnd.github.raw" > entry.json
+              entry=$(jq -c --arg s "$sub" --arg f "$path" '
+                (.records // {} | keys_unsorted | first) as $type |
+                {
+                  subdomain: (.subdomain // $s),
+                  file: $f,
+                  action: (if .destroy == true then "remove" else "register" end),
+                  record: ($type // "—"),
+                  target: (
+                    if $type == null then "—"
+                    else (.records[$type] | if type == "array" then .[0].value else .value end)
+                    end
+                  ),
+                  owner: (.owner.github // "—")
+                }' entry.json)
+            fi
+            jq -c --argjson e "$entry" '. + [$e]' entries.json > entries.tmp
+            mv entries.tmp entries.json
+          done < <(jq -r '.[] | [.filename, .status] | @tsv' files.json)
+
+          count=$(jq 'length' entries.json)
+
+          # Name the thread after the subdomain when there is exactly one;
+          # naming a 7-subdomain PR after its first entry reads as a lie.
+          if [ "$count" -eq 1 ]; then
+            label=$(jq -r '.[0].subdomain' entries.json)
+          else
+            label="$count subdomains"
+          fi
+
+          # Discord caps thread names at 100 characters.
+          thread_name=$(printf '#%s · %s' "$(jq -r '.number' pr.json)" "$label" | cut -c1-100)
+          echo "thread_name=$thread_name" >> "$GITHUB_OUTPUT"
+          echo "prefix=#$(jq -r '.number' pr.json) ·" >> "$GITHUB_OUTPUT"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+          jq -n \
+            --slurpfile pr pr.json \
+            --slurpfile entries entries.json \
+            --arg root "$ROOT_DOMAIN" \
+            --arg repo "$GH_REPO" '
+            $pr[0] as $p | $entries[0] as $e | ($e | length) as $n |
+            {
+              author: {
+                name: ($p.user.login + (
+                  if ($e | map(select(.action == "remove")) | length) == $n
+                  then " wants to remove a subdomain"
+                  else " wants to register a subdomain"
+                  end)),
+                icon_url: $p.user.avatar_url,
+                url: $p.user.html_url
+              },
+              title: (
+                if $n == 1 then ($e[0].subdomain + "." + $root)
+                else ($n | tostring) + " subdomains"
+                end
+              ),
+              url: $p.html_url,
+              description: $p.title,
+              fields: (
+                if $n == 1 then [
+                  {name: "Owner",  value: (($e[0].owner // "—") | if . == "—" then . else "@" + . end), inline: true},
+                  {name: "Record", value: ("`" + $e[0].record + "`"), inline: true},
+                  {name: "Target", value: ("`" + $e[0].target + "`"), inline: true},
+                  {name: "File",   value: ("`" + $e[0].file + "`"), inline: false}
+                ] else [
+                  {
+                    name: "Subdomains",
+                    value: (
+                      ([$e[:5][] | "`" + .subdomain + "." + $root + "` → `" + .target + "`"]
+                        + (if $n > 5 then ["_+" + (($n - 5) | tostring) + " more_"] else [] end))
+                      | join("\n")
+                    ),
+                    inline: false
+                  }
+                ] end
+              ),
+              footer: {text: ($repo + " · PR #" + ($p.number | tostring))},
+              timestamp: $p.created_at
+            }' > embed.json
+
+      - name: Sync Discord thread
+        if: steps.gate.outputs.eligible == 'true'
+        env:
+          MODE: ${{ steps.pr.outputs.mode }}
+          THREAD_NAME: ${{ steps.card.outputs.thread_name }}
+          THREAD_PREFIX: ${{ steps.card.outputs.prefix }}
+        run: |
+          set -uo pipefail
+
+          # Any unhandled failure past this point degrades to a warning. The PR
+          # is the product; the Discord thread is a convenience.
+          fail() { echo "::warning::Discord forum sync failed: $*"; echo "⚠️ Discord forum sync failed: $*" >> "$GITHUB_STEP_SUMMARY"; exit 0; }
+
+          # Single retry on 429, honoring Discord's own retry_after.
+          discord() {
+            local method=$1 path=$2 body=${3-}
+            local attempt code
+            for attempt in 1 2; do
+              if [ -n "$body" ]; then
+                code=$(curl -sS -o d_resp.json -w '%{http_code}' -X "$method" \
+                  -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
+                  -H "Content-Type: application/json" \
+                  -d "$body" "$DISCORD_API$path")
+              else
+                code=$(curl -sS -o d_resp.json -w '%{http_code}' -X "$method" \
+                  -H "Authorization: Bot $DISCORD_BOT_TOKEN" "$DISCORD_API$path")
+              fi
+              if [ "$code" = "429" ] && [ "$attempt" = "1" ]; then
+                sleep "$(jq -r '.retry_after // 5' d_resp.json)"
+                continue
+              fi
+              break
+            done
+            case "$code" in
+              2*) return 0 ;;
+              *) echo "$method $path → HTTP $code" >&2; jq -c '.' d_resp.json >&2 2>/dev/null || cat d_resp.json >&2; return 1 ;;
+            esac
+          }
+
+          # Stateless lookup: active threads first (the common case, since we do
+          # our own archiving), then public archived threads for PRs that sat
+          # long enough for Discord to auto-archive the thread.
+          find_thread() {
+            local id page before
+            discord GET "/guilds/$GUILD_ID/threads/active" || return 1
+            id=$(jq -r --arg p "$FORUM_ID" --arg n "$THREAD_PREFIX" \
+              '[.threads[] | select(.parent_id == $p and (.name | startswith($n))) | .id] | first // empty' d_resp.json)
+            if [ -n "$id" ]; then echo "$id"; return 0; fi
+
+            before=
+            for page in 1 2 3 4 5; do
+              if [ -n "$before" ]; then
+                discord GET "/channels/$FORUM_ID/threads/archived/public?limit=100&before=$before" || return 1
+              else
+                discord GET "/channels/$FORUM_ID/threads/archived/public?limit=100" || return 1
+              fi
+              id=$(jq -r --arg n "$THREAD_PREFIX" \
+                '[.threads[] | select(.name | startswith($n)) | .id] | first // empty' d_resp.json)
+              if [ -n "$id" ]; then echo "$id"; return 0; fi
+              [ "$(jq -r '.has_more' d_resp.json)" = "true" ] || return 0
+              before=$(jq -r '.threads | last | .thread_metadata.archive_timestamp' d_resp.json)
+            done
+            return 0
+          }
+
+          # applied_tags is a full replacement, not a merge, so setting the
+          # status tag naively would wipe any tag a human added (Portfolio, and
+          # anything added later). Read the thread's current tags, drop only the
+          # three status tags, and prepend the new one. Discord caps a thread at
+          # 5 tags, so the slice keeps status and sheds the oldest extras.
+          retag() {
+            local thread=$1 new=$2 tags
+            discord GET "/channels/$thread" || return 1
+            tags=$(jq -c --arg new "$new" \
+              --arg a "$TAG_NEEDS_REVIEW" --arg b "$TAG_LIVE" --arg c "$TAG_CLOSED" '
+              (((.applied_tags // []) - [$a, $b, $c]) as $keep | [$new] + $keep | .[0:5])' d_resp.json)
+            discord PATCH "/channels/$thread" \
+              "$(jq -cn --argjson t "$tags" '{applied_tags: $t, archived: false}')"
+          }
+
+          merged=$(jq -r '.merged' pr.json)
+          pr_url=$(jq -r '.html_url' pr.json)
+
+          if [ "$MODE" = "close" ]; then
+            if [ "$merged" = "true" ]; then
+              color=5763719   # green
+              tag="$TAG_LIVE"
+              # A removal-only PR has no URL to point at, so it must not render
+              # "Live shortly at:" followed by nothing.
+              reply=$(jq -r --arg root "$ROOT_DOMAIN" '
+                [.[] | select(.action != "remove") | "https://" + .subdomain + "." + $root] as $live |
+                if ($live | length) > 0
+                then "✅ **Merged.** Live shortly at:\n" + ($live | join("\n"))
+                else "✅ **Merged.** Records removed."
+                end' entries.json)
+            else
+              color=15548997  # red
+              tag="$TAG_CLOSED"
+              reply="❌ **Closed without merging.** $pr_url"
+            fi
+          else
+            color=15774258    # amber
+            tag="$TAG_NEEDS_REVIEW"
+          fi
+
+          payload=$(jq -cn --slurpfile embed embed.json --arg name "$THREAD_NAME" \
+            --argjson color "$color" --arg tag "$tag" '
+            {name: $name, applied_tags: [$tag], message: {embeds: [$embed[0] + {color: $color}]}}')
+
+          if [ "$DRY_RUN" = "true" ]; then
+            {
+              echo "## Discord forum sync (dry run)"
+              echo ""
+              echo "Mode: \`$MODE\` · thread: \`$THREAD_NAME\`"
+              echo ""
+              echo '```json'
+              jq '.' <<< "$payload"
+              echo '```'
+              [ "$MODE" = "close" ] && { echo "Reply:"; echo ""; echo "> ${reply//$'\n'/$'\n'> }"; }
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          if [ "$MODE" = "close" ]; then
+            thread=$(find_thread) || fail "could not list threads"
+            [ -n "$thread" ] || fail "no thread found for $THREAD_PREFIX"
+
+            # Order matters: retag (which also revives the thread if Discord
+            # auto-archived it), then reply, then archive. Posting into an
+            # archived thread requires reviving it first.
+            retag "$thread" "$tag" || fail "could not retag thread $thread"
+
+            discord POST "/channels/$thread/messages" \
+              "$(jq -cn --arg c "$reply" '{content: $c}')" \
+              || fail "could not reply in thread $thread"
+
+            discord PATCH "/channels/$thread" '{"archived": true}' \
+              || fail "could not archive thread $thread"
+
+            echo "Updated thread $thread" >> "$GITHUB_STEP_SUMMARY"
+          else
+            # A reopened PR already has a thread; revive and retag it rather
+            # than creating a duplicate.
+            thread=$(find_thread) || fail "could not list threads"
+            if [ -n "$thread" ]; then
+              retag "$thread" "$tag" || fail "could not revive thread $thread"
+              echo "Revived thread $thread" >> "$GITHUB_STEP_SUMMARY"
+            else
+              discord POST "/channels/$FORUM_ID/threads" "$payload" \
+                || fail "could not create thread"
+              echo "Created thread $(jq -r '.id' d_resp.json)" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          fi
