@@ -11,6 +11,11 @@ name: Discord Forum
 on:
   pull_request_target:
     types: [opened, reopened, ready_for_review, closed]
+  # pull_request_review runs in the base repository's context and receives
+  # secrets, same as pull_request_target, so review state reaches the bot even
+  # for fork PRs.
+  pull_request_review:
+    types: [submitted]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -87,7 +92,9 @@ jobs:
 
           # workflow_dispatch has no event action, so derive the mode from the
           # PR's own state instead of the trigger.
-          if [ "${{ github.event.action }}" = "closed" ] || \
+          if [ "$GITHUB_EVENT_NAME" = "pull_request_review" ]; then
+            echo "mode=review" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.action }}" = "closed" ] || \
              { [ -z "${{ github.event.action }}" ] && [ "$(jq -r '.state' pr.json)" = "closed" ]; }; then
             echo "mode=close" >> "$GITHUB_OUTPUT"
           else
@@ -234,6 +241,9 @@ jobs:
           MODE: ${{ steps.pr.outputs.mode }}
           THREAD_NAME: ${{ steps.card.outputs.thread_name }}
           THREAD_PREFIX: ${{ steps.card.outputs.prefix }}
+          # A fixed GitHub enum (approved / changes_requested / commented), and
+          # empty on every trigger that is not a review.
+          REVIEW_STATE: ${{ github.event.review.state }}
         run: |
           set -uo pipefail
 
@@ -308,13 +318,58 @@ jobs:
               "$(jq -cn --argjson t "$tags" '{applied_tags: $t, archived: false}')"
           }
 
+          # Reactions are the glanceable layer, so the thread carries exactly one
+          # at a time rather than a pile of history — GitHub's timeline already
+          # keeps the history. Percent-encoded because they go in the URL path.
+          REACT_APPROVED='%E2%9C%85'      # ✅
+          REACT_CHANGES='%F0%9F%94%A7'    # 🔧
+          REACT_MERGED='%F0%9F%8E%89'     # 🎉
+          REACT_CLOSED='%F0%9F%9A%AB'     # 🚫
+          ALL_REACTIONS="$REACT_APPROVED $REACT_CHANGES $REACT_MERGED $REACT_CLOSED"
+
+          # In a forum post the starter message shares the thread's own id, so
+          # channel and message are the same value. Clearing the bot's own
+          # reactions needs no permission beyond adding them. Passing an empty
+          # keep clears all four.
+          react() {
+            local thread=$1 keep=${2-} e
+            for e in $ALL_REACTIONS; do
+              [ "$e" = "$keep" ] && continue
+              # Deleting a reaction that was never applied is not an error worth
+              # failing the run over.
+              discord DELETE "/channels/$thread/messages/$thread/reactions/$e/@me" >/dev/null 2>&1 || true
+            done
+            [ -n "$keep" ] || return 0
+            discord PUT "/channels/$thread/messages/$thread/reactions/$keep/@me"
+          }
+
           merged=$(jq -r '.merged' pr.json)
           pr_url=$(jq -r '.html_url' pr.json)
 
-          if [ "$MODE" = "close" ]; then
+          # set -u is on and review mode assigns none of these, so give them
+          # defaults before branching rather than letting the payload build
+          # abort on an unbound variable.
+          color=15774258
+          tag="$TAG_NEEDS_REVIEW"
+          reply=""
+          reaction=""
+
+          if [ "$MODE" = "review" ]; then
+            # A plain "commented" review is not a verdict, so it earns no
+            # reaction and the thread keeps whatever state it had.
+            case "$REVIEW_STATE" in
+              approved)          reaction="$REACT_APPROVED" ;;
+              changes_requested) reaction="$REACT_CHANGES" ;;
+              *)
+                echo "::notice::Review state '$REVIEW_STATE' needs no reaction"
+                exit 0
+                ;;
+            esac
+          elif [ "$MODE" = "close" ]; then
             if [ "$merged" = "true" ]; then
               color=5763719   # green
               tag="$TAG_LIVE"
+              reaction="$REACT_MERGED"
               # A removal-only PR has no URL to point at, so it must not render
               # "Live shortly at:" followed by nothing.
               reply=$(jq -r --arg root "$ROOT_DOMAIN" '
@@ -327,10 +382,13 @@ jobs:
               color=15548997  # red
               tag="$TAG_CLOSED"
               reply="❌ **Closed without merging.** $pr_url"
+              reaction="$REACT_CLOSED"
             fi
           else
             color=15774258    # amber
             tag="$TAG_NEEDS_REVIEW"
+            # A reopened PR starts over: clear whatever verdict it carried.
+            reaction=""
           fi
 
           payload=$(jq -cn --slurpfile embed embed.json --arg name "$THREAD_NAME" \
@@ -343,22 +401,42 @@ jobs:
               echo ""
               echo "Mode: \`$MODE\` · thread: \`$THREAD_NAME\`"
               echo ""
-              echo '```json'
-              jq '.' <<< "$payload"
-              echo '```'
+              if [ "$MODE" = "review" ]; then
+                echo "Review state: \`$REVIEW_STATE\` → reaction \`$reaction\`"
+              else
+                echo '```json'
+                jq '.' <<< "$payload"
+                echo '```'
+                echo "Reaction: \`${reaction:-none}\`"
+              fi
               [ "$MODE" = "close" ] && { echo "Reply:"; echo ""; echo "> ${reply//$'\n'/$'\n'> }"; }
             } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          if [ "$MODE" = "close" ]; then
+          if [ "$MODE" = "review" ]; then
+            thread=$(find_thread) || fail "could not list threads"
+            [ -n "$thread" ] || fail "no thread found for $THREAD_PREFIX"
+
+            # A review leaves tags alone — only the reaction changes. Reviving
+            # first because an auto-archived thread rejects reaction writes.
+            discord PATCH "/channels/$thread" '{"archived": false}' \
+              || fail "could not revive thread $thread"
+
+            react "$thread" "$reaction" || fail "could not react on thread $thread"
+
+            echo "Reacted on thread $thread ($REVIEW_STATE)" >> "$GITHUB_STEP_SUMMARY"
+
+          elif [ "$MODE" = "close" ]; then
             thread=$(find_thread) || fail "could not list threads"
             [ -n "$thread" ] || fail "no thread found for $THREAD_PREFIX"
 
             # Order matters: retag (which also revives the thread if Discord
-            # auto-archived it), then reply, then archive. Posting into an
-            # archived thread requires reviving it first.
+            # auto-archived it), then react and reply, then archive. Both a
+            # reaction and a message need the thread to be active first.
             retag "$thread" "$tag" || fail "could not retag thread $thread"
+
+            react "$thread" "$reaction" || fail "could not react on thread $thread"
 
             discord POST "/channels/$thread/messages" \
               "$(jq -cn --arg c "$reply" '{content: $c}')" \
@@ -374,6 +452,7 @@ jobs:
             thread=$(find_thread) || fail "could not list threads"
             if [ -n "$thread" ]; then
               retag "$thread" "$tag" || fail "could not revive thread $thread"
+              react "$thread" "$reaction" || fail "could not clear reactions on thread $thread"
               echo "Revived thread $thread" >> "$GITHUB_STEP_SUMMARY"
             else
               discord POST "/channels/$FORUM_ID/threads" "$payload" \
