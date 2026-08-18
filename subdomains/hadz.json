@@ -6,10 +6,10 @@
   },
   "records": {
     "CNAME": {
-      "value": "<your-cname-from-vercel>."
+      "value": "0b2f23d3bd928439.vercel-dns-017.com."
     },
     "TXT": {
-      "value": "vc-domain-verify=hadz.is-pinoy.dev,<verification-code>",
+      "value": "vc-domain-verify=hadz.is-pinoy.dev,e6d20a0172eff3dd5199",
       "provider": "vercel"
     }
   }
