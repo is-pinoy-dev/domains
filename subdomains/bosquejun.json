@@ -1,7 +1,8 @@
 {
   "subdomain": "bosquejun",
   "owner": {
-    "github": "bosquejun"
+    "github": "bosquejun",
+    "email": "bosque.junpaul@gmail.com"
   },
   "portfolio": {
     "template": "terminal",
