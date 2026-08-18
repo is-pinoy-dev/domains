@@ -12,5 +12,10 @@
       "value": "portfolio.is-pinoy.dev",
       "proxied": true
     }
+  },
+  "features": {
+    "tools": {
+      "site-audit": false
+    }
   }
 }
