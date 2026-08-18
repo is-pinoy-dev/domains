@@ -1,0 +1,17 @@
+{
+  "subdomain": "is-pinoy-dev-admin",
+  "owner": {
+    "github": "is-pinoy-dev-admin",
+    "id": 317495164
+  },
+  "portfolio": {
+    "template": "terminal",
+    "theme": "gold-dark"
+  },
+  "records": {
+    "CNAME": {
+      "value": "portfolio.is-pinoy.dev",
+      "proxied": true
+    }
+  }
+}
