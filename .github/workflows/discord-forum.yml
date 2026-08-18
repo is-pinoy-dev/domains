@@ -32,6 +32,10 @@ jobs:
   forum:
     name: Sync Discord Thread
     runs-on: ubuntu-latest
+    # DISCORD_BOT_TOKEN and DISCORD_GUILD_ID live on the production environment;
+    # environment secrets and variables are invisible to a job that does not
+    # declare it. The remaining vars are repo-level and resolve either way.
+    environment: production
     # Discord being down, rate limited, or misconfigured must never put a red X
     # on a contributor's PR. Every failure path below also exits 0 on its own;
     # this is the backstop for the ones that are not anticipated.
