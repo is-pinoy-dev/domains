@@ -1,0 +1,12 @@
+{
+  "subdomain": "arszverse",
+  "owner": {
+    "github": "christianericablanca-cmd",
+    "email": "christiane.ricablanca@gmail.com"
+  },
+  "records": {
+    "CNAME": {
+      "value": "arszverse.vercel.app."
+    }
+  }
+}
