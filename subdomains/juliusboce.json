@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
   "subdomain": "juliusboce",
   "owner": {
-    "github": "bocejholo"
+    "github": "julz1337"
   },
   "records": {
     "CNAME": {
