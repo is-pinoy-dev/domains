@@ -9,6 +9,9 @@ jobs:
   stats:
     name: Update Subdomain Stats
     runs-on: ubuntu-latest
+    # PAT_TOKEN lives on the production environment; environment secrets are
+    # invisible to a job that does not declare it (see discord-forum.yml).
+    environment: production
     permissions:
       contents: write
     steps:
