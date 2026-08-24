@@ -45,6 +45,11 @@ jobs:
     steps:
       - name: Checkout domains
         uses: actions/checkout@v7
+        with:
+          # Full history: the dashboard snapshot dates each subdomain from the
+          # first and last commit to touch its file, and a shallow clone has
+          # neither.
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -55,6 +60,11 @@ jobs:
         run: npm install -g @is-pinoy-dev/cli@latest
 
       - name: Sync subdomains
+        id: sync
+        # The dashboard is told the outcome either way — a failed sync should
+        # leave the rows marked failed, not leave the read model untouched and
+        # silently stale. The job is failed again at the end of the run.
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
@@ -64,3 +74,46 @@ jobs:
           # `portfolio` block; unset, route handling is skipped entirely.
           PORTFOLIO_WORKER: tools-portfolio-proxy
         run: is-pinoy registry sync --dir ./subdomains --yes
+
+      # The dashboard reads its domain list from a D1 table that is a read
+      # model of this repo, refreshed only by the snapshot below. Without it
+      # the dashboard keeps serving whatever it was last told: subdomains
+      # registered since then never appear, and ones removed here linger.
+      - name: Build registry snapshot
+        if: always()
+        env:
+          SNAPSHOT_STATUS: ${{ steps.sync.outcome == 'success' && 'synced' || 'failed' }}
+          SNAPSHOT_ERROR: >-
+            ${{ steps.sync.outcome == 'success' && '' ||
+            format('registry sync failed in run {0}', github.run_id) }}
+        run: ./scripts/build-snapshot.sh ./subdomains snapshot.json
+
+      - name: Notify dashboard
+        if: always()
+        env:
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://dashboard.is-pinoy.dev' }}
+          REGISTRY_SYNC_SECRET: ${{ secrets.REGISTRY_SYNC_SECRET }}
+        run: |
+          if [ -z "$REGISTRY_SYNC_SECRET" ]; then
+            echo "::error::REGISTRY_SYNC_SECRET is not set - the dashboard's" \
+              "domain list will stay stale until it is."
+            exit 1
+          fi
+          code=$(curl -sS -o response.txt -w '%{http_code}' \
+            -X POST "$DASHBOARD_URL/api/registry/events" \
+            -H "Authorization: Bearer $REGISTRY_SYNC_SECRET" \
+            -H "Content-Type: application/json" \
+            --data @snapshot.json)
+          echo "HTTP $code"
+          cat response.txt
+          echo
+          if [ "$code" != "200" ]; then
+            echo "::error::Dashboard rejected the registry snapshot (HTTP $code)."
+            exit 1
+          fi
+
+      - name: Fail if the Cloudflare sync failed
+        if: always() && steps.sync.outcome != 'success'
+        run: |
+          echo "::error::registry sync failed; see the 'Sync subdomains' step."
+          exit 1
