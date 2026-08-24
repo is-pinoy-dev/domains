@@ -6,6 +6,14 @@ on:
       - main
     paths:
       - "subdomains/**"
+      # The snapshot POST below is the only thing that refreshes the
+      # dashboard's read model, so a change to how it is built has to be able
+      # to re-run without waiting for the next registration.
+      - ".github/workflows/sync.yml"
+      - "scripts/build-snapshot.sh"
+  # Re-sync Cloudflare and rebuild the dashboard's read model on demand — for
+  # a backfill after the read model has drifted, or to recover a failed run.
+  workflow_dispatch:
 
 jobs:
   validate:
