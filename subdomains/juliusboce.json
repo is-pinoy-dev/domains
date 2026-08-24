@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "ae8de81467e8638d.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=juliusboce.is-pinoy.dev,f97b7e6b1ab48c84001c",
-      "provider": "vercel"
     }
   }
 }
