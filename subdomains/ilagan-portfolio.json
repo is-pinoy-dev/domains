@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "ilagan-portfolio",
+  "owner": {
+    "github": "junnelilagan19-design"
+  },
+  "records": {
+    "CNAME": {
+      "value": "3865efd5c8a660af.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=ilagan-portfolio.is-pinoy.dev,970eb961d42464fbf406",
+      "provider": "vercel"
+    }
+  }
+}
