@@ -9,7 +9,7 @@
       "value": "ebfc5594db351cca.vercel-dns-017.com."
     },
     "TXT": {
-      "value": "vc-domain-verify=ahiah.is-pinoy.dev,64963bfaaa56be1d9f2",
+      "value": "vc-domain-verify=ahiah.is-pinoy.dev,64963bfaaaa56be1d9f2",
       "provider": "vercel"
     }
   }
