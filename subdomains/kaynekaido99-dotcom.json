@@ -4,8 +4,9 @@
   "owner": {
     "github": "kaynekaido99-dotcom"
   },
-  "record": {
-    "type": "CNAME",
-    "value": "kaynekaido99-dotcom.github.io"
+  "records": {
+    "CNAME": {
+      "value": "kaynekaido99-dotcom.github.io."
+    }
   }
 }
