@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "ahiah",
+  "owner": {
+    "github": "afighi"
+  },
+  "records": {
+    "CNAME": {
+      "value": "ebfc5594db351cca.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=ahiah.is-pinoy.dev,64963bfaaaa56be1d9f2",
+      "provider": "vercel"
+    }
+  }
+}

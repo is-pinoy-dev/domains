@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
+  "subdomain": "wingedge",
+  "owner": {
+    "github": "wingedge",
+    "email": "moreno.francis@gmail.com"
+  },
+  "records": {
+    "A": {
+      "value": "104.236.76.57"
+    }
+  }
+}

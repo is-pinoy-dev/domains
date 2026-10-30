@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "earlclydebanezsoftwareeng",
+  "owner": {
+    "github": "EarlClydeeee"
+  },
+  "records": {
+    "CNAME": {
+      "value": "ec9e9db521c70bb2.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=earlclydebanezsoftwareeng.is-pinoy.dev,978dff2f3c5c4815eab8",
+      "provider": "vercel"
+    }
+  }
+}

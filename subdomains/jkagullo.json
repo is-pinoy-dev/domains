@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "13efead200c18c3f.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=jkagullo.is-pinoy.dev,ef0e3074fb27389304c4",
-      "provider": "vercel"
     }
   }
 }

@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "7b5c84b52a431896.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=flaminghotsisig.is-pinoy.dev,364e7e1791d439564251",
-      "provider": "vercel"
     }
   }
 }

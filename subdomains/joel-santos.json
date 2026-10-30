@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "joel-santos",
+  "owner": {
+    "github": "iskow"
+  },
+  "records": {
+    "CNAME": {
+      "value": "941a3b9aa7be12bf.vercel-dns-017.com."
+    }
+  }
+}

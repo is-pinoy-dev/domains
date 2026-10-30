@@ -1,12 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
-  "subdomain": "ichimaki",
+  "subdomain": "asher",
   "owner": {
-    "github": "IchimakiKasura"
+    "github": "99lash"
   },
   "records": {
     "CNAME": {
-      "value": "ichimakikasura.github.io."
+      "value": "66542364edcf474b.vercel-dns-017.com."
     }
   }
 }

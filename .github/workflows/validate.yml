@@ -20,15 +20,64 @@ jobs:
     steps:
       - name: Generate Pareng Gar token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
+      # Every check below reads subdomain JSON off disk, so what we check out
+      # decides what they see. The PR head is the wrong answer: a branch cut
+      # before an unrelated commit landed on main still carries the pre-merge
+      # content of files it never touched, which surfaces as failures and
+      # phantom diffs the contributor cannot see in their own PR. The concrete
+      # case: the weekly Vercel TXT cleanup prunes a verified vc-domain-verify
+      # TXT on main, and any PR branched before that still has the TXT in its
+      # head commit — so "Reject re-added verification TXTs" rejects a PR that
+      # re-adds nothing, and the sync dry-run reports phantom record changes.
+      #
+      # refs/pull/N/merge is the test-merge commit GitHub maintains for every
+      # mergeable PR: base + head, exactly what merging would produce. It holds
+      # the same untrusted contributor content as the head sha, so this is no
+      # more privileged than the checkout it replaces (still data-only, still
+      # sparse to subdomains/, still never executed).
+      - name: Resolve ref to validate
+        id: ref
+        env:
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          # .mergeable is computed asynchronously and reads null until GitHub
+          # finishes the test merge, so poll rather than trust the first answer.
+          mergeable=null
+          for _ in 1 2 3 4 5; do
+            mergeable=$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER" --jq '.mergeable' 2>/dev/null || echo null)
+            [ "$mergeable" = "null" ] || break
+            sleep 3
+          done
+
+          case "$mergeable" in
+            true)
+              echo "ref=refs/pull/$PR_NUMBER/merge" >> "$GITHUB_OUTPUT"
+              ;;
+            false)
+              echo "::error::This pull request conflicts with $BASE_REF. Merge the latest $BASE_REF into your branch, resolve the conflicts, and push again."
+              exit 1
+              ;;
+            *)
+              # Validating the head would reintroduce the stale-base false
+              # positives this step exists to prevent. Fail closed and let the
+              # workflow rerun once GitHub has computed mergeability instead.
+              echo "::error::GitHub has not computed a merge result for this pull request yet. Re-run this workflow in a few moments."
+              exit 1
+              ;;
+          esac
+
       - name: Checkout domains
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ steps.ref.outputs.ref }}
+          allow-unsafe-pr-checkout: true
           sparse-checkout: subdomains
           sparse-checkout-cone-mode: false
 
@@ -44,7 +93,23 @@ jobs:
           fi
 
       - name: Validate subdomain ownership
-        if: steps.detect.outputs.has_subdomain_changes == 'true'
+        # Skip for the scheduled Vercel TXT cleanup: it only strips verified
+        # verification records and never touches owner.github, so an
+        # owner==author check would always fail across every file it edits.
+        #
+        # Two ways to recognise it, because the cleanup pushes with PAT_TOKEN
+        # (so the PR is authored by the PAT owner, not the app bot):
+        #   1. app slug — matches when the cleanup runs on an app token, which a
+        #      human PR author cannot spoof.
+        #   2. branch — the cleanup's own branch on THIS repo, never a fork. The
+        #      name must stay in sync with BRANCH in vercel-cleanup.yml.
+        # Note (2) trusts anyone with write access to this repo, since only they
+        # can push that branch here; a fork PR fails the head.repo check.
+        if: >-
+          steps.detect.outputs.has_subdomain_changes == 'true' &&
+          github.event.pull_request.user.login != format('{0}[bot]', steps.app-token.outputs.app-slug) &&
+          !(github.event.pull_request.head.repo.full_name == github.repository &&
+            github.event.pull_request.head.ref == 'chore/vercel-txt-cleanup')
         env:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
@@ -62,12 +127,33 @@ jobs:
 
       - name: Validate subdomains
         if: steps.detect.outputs.has_subdomain_changes == 'true'
-        uses: is-pinoy-dev/ecosystem/.github/actions/registry-validate@b3236205bead32c8a58b98f7e405bf2e1d78d54f
+        uses: is-pinoy-dev/ecosystem/.github/actions/registry-validate@main
         with:
           dir: ./subdomains
           github-token: ${{ steps.app-token.outputs.token }}
           cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+
+      # Reject re-adding a single-use vc-domain-verify TXT for a domain that is
+      # already verified and live on Vercel (the scheduled cleanup removed it;
+      # resurrecting it just churns the record). Probes only this PR's changed
+      # files. Needs no Cloudflare creds — it only reads files and probes HTTP.
+      # (Requires a CLI release with `vercel-cleanup --check`; the composite
+      # action above installs @is-pinoy-dev/cli@latest onto the job PATH.)
+      - name: Reject re-added verification TXTs
+        if: steps.detect.outputs.has_subdomain_changes == 'true'
+        env:
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          files=$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER/files" --paginate \
+            --jq '.[].filename | select(startswith("subdomains/") and endswith(".json"))')
+          if [ -z "$files" ]; then
+            echo "No changed subdomain files to check."
+            exit 0
+          fi
+          # shellcheck disable=SC2086
+          is-pinoy registry vercel-cleanup --dir ./subdomains --check --only $files
 
       - name: Safe Browsing check
         if: steps.detect.outputs.has_subdomain_changes == 'true'

@@ -1,13 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
-  "subdomain": "example",
+  "subdomain": "ghost",
   "owner": {
-    "github": "bosquejun",
-    "email": "bosque.junpaul@gmail.com"
+    "github": "GlensonAnsin"
   },
   "records": {
     "CNAME": {
-      "value": "f78396fe5442230b.vercel-dns-017.com."
+      "value": "5ab723369077ac19.vercel-dns-017.com."
     }
   }
 }

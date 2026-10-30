@@ -6,10 +6,6 @@
   "records": {
     "CNAME": {
       "value": "075802c2c62f4e9a.vercel-dns-017.com."
-    },
-    "TXT": {
-      "provider": "vercel",
-      "value": "vc-domain-verify=michael.is-pinoy.dev,dd26334023e92e095a0b"
     }
   }
 }

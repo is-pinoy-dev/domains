@@ -2,16 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
   "subdomain": "roasi",
   "owner": {
-    "github": "bosquejun",
-    "email": "bosque.junpaul@gmail.com"
+    "github": "bosquejun"
   },
   "records": {
     "CNAME": {
       "value": "6e9801a78f000673.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=roasi.is-pinoy.dev,341eca9541883058961f",
-      "provider": "vercel"
     }
   }
 }

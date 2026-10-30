@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "d652fa974cabe738.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=herndev.is-pinoy.dev,446a8e58b2f15afae036",
-      "provider": "vercel"
     }
   }
 }

@@ -7,10 +7,6 @@
   "records": {
     "CNAME": {
       "value": "e38ee861efd3c21d.vercel-dns-017.com."
-    },
-    "TXT": {
-      "value": "vc-domain-verify=jrbolima.is-pinoy.dev,282aef2a92d924f0dc5c",
-      "provider": "vercel"
     }
   }
 }

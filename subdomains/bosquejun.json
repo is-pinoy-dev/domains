@@ -1,0 +1,20 @@
+{
+  "subdomain": "bosquejun",
+  "owner": {
+    "github": "bosquejun"
+  },
+  "portfolio": {
+    "template": "solar"
+  },
+  "records": {
+    "CNAME": {
+      "value": "portfolio.is-pinoy.dev",
+      "proxied": true
+    }
+  },
+  "features": {
+    "tools": {
+      "site-audit": true
+    }
+  }
+}
