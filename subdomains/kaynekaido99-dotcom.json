@@ -2,12 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/domains/main/schemas/v1/subdomain.schema.json",
   "subdomain": "kaynekaido99-dotcom",
   "owner": {
-    "username": "kaynekaido99-dotcom",
-    "email": "kaynekaido99@gmail.com"
+    "github": "kaynekaido99-dotcom"
   },
-  "records": {
-    "CNAME": [
-      "kaynekaido99-dotcom.github.io"
-    ]
+  "record": {
+    "type": "CNAME",
+    "value": "kaynekaido99-dotcom.github.io"
   }
 }
