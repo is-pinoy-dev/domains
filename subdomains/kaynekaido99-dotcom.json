@@ -5,6 +5,8 @@
     "github": "kaynekaido99-dotcom"
   },
   "records": {
-    "CNAME": "kaynekaido99-dotcom.github.io."
+    "CNAME": [
+      "kaynekaido99-dotcom.github.io"
+    ]
   }
 }
