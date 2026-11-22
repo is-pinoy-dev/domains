@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "elijaspen",
+  "owner": {
+    "github": "elijaspen"
+  },
+  "records": {
+    "CNAME": {
+      "value": "1a08d8da6b896216.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=elijaspen.is-pinoy.dev,f68364875c8d8c7d0989",
+      "provider": "vercel"
+    }
+  }
+}
