@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/is-pinoy-dev/ecosystem/main/packages/schemas/schema/v1/subdomain.schema.json",
+  "subdomain": "johnmichaeldelola",
+  "owner": {
+    "github": "emfushiguro"
+  },
+  "records": {
+    "CNAME": {
+      "value": "08367efe19823eea.vercel-dns-017.com."
+    },
+    "TXT": {
+      "value": "vc-domain-verify=johnmichaeldelola.is-pinoy.dev,eec4ebf441c77af660fd",
+      "provider": "vercel"
+    }
+  }
+}
